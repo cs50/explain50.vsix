@@ -1,4 +1,5 @@
 const axios = require('axios');
+import * as vscode from 'vscode';
 
 const openai = axios.create({
     baseURL: 'https://api.openai.com/v1',
@@ -8,6 +9,7 @@ const openai = axios.create({
     }});
 
 export async function processPrompt(codeSnippet: String) {
+    vscode.window.showInformationMessage("Analyzing code...");
     let response: String = '';
     await openai.post('/chat/completions', {
         'model': 'gpt-3.5-turbo',
@@ -15,6 +17,7 @@ export async function processPrompt(codeSnippet: String) {
     }).then((res: any) => {
         response = res.data.choices[0]['message']['content'];
     }).catch((err: any) => {
+        vscode.window.showErrorMessage('Failed to connect to OpenAI API server');
         console.error(err);
     });
     return response;

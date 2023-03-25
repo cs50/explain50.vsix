@@ -34,14 +34,27 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
             selectedEditorText().then((text) => {
-                vscode.window.showInformationMessage("Analyzing code...");
                 gpt.processPrompt(text).then((response: any) => {
-                    console.log(response);
-                    vscode.window.showInformationMessage(response);
+                    if (response.length > 0) {
+                        createWebviewPanel(response);
+                    }
                 });
             });
         }
     ));
+}
+
+function createWebviewPanel(content: string) {
+    const panel = vscode.window.createWebviewPanel(
+        'codeAnalysis',
+        'Code Analysis',
+        vscode.ViewColumn.Beside,
+        {
+            enableScripts: true,
+            retainContextWhenHidden: true
+        }
+    );
+    panel.webview.html = content;
 }
 
 async function selectedEditorText() {
@@ -65,6 +78,7 @@ async function selectedEditorText() {
                     for (let i = 0; i < symbols.length; i++) {
                         if (symbols[i].kind === vscode.SymbolKind.Function && textLine.includes(symbols[i].name)) {
                             text = editor.document.getText(symbols[i].range);
+                            editor.selection = new vscode.Selection(symbols[i].range.start, symbols[i].range.end);
                             break;
                         }
                     }
