@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as gpt from './gpt';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -33,7 +34,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
             selectedEditorText().then((text) => {
-                console.log(text);
+                vscode.window.showInformationMessage("Analyzing code...");
+                gpt.processPrompt(text).then((response: any) => {
+                    console.log(response);
+                    vscode.window.showInformationMessage(response);
+                });
             });
         }
     ));
