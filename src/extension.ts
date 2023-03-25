@@ -16,8 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
                 // Set the command that is executed when the code action is selected.
                 action.command = {
                     title: 'Code Analysis',
-                    command: 'copilot50.codeAnalysis',
-                    arguments: [selectedEditorText()]
+                    command: 'copilot50.codeAnalysis'
                 };
 
                 // Set the diagnostics that this code action resolves.
@@ -32,20 +31,44 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register a command that is invoked when the code action is selected
     context.subscriptions.push(
-        vscode.commands.registerCommand('copilot50.codeAnalysis', (text) => {
-            console.log(text);
+        vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
+            selectedEditorText().then((text) => {
+                console.log(text);
+            });
         }
     ));
 }
 
-function selectedEditorText() {
+async function selectedEditorText() {
     const editor = vscode.window.activeTextEditor;
     if (editor) {
         let selection = editor.selection;
         let text = editor.document.getText(selection);
-        return text;
+
+        if (text.length > 0) { return text; }
+
+        if (text.length === 0) {
+
+            // get current line from editor
+            const line = editor.document.lineAt(selection.start.line);
+            let textLine = line.text;
+
+            // get current function definition from vscode outline
+            const outline = vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', editor.document.uri);
+            if (outline) {
+                await outline.then((symbols: any) => {
+                    for (let i = 0; i < symbols.length; i++) {
+                        if (symbols[i].kind === vscode.SymbolKind.Function && textLine.includes(symbols[i].name)) {
+                            text = editor.document.getText(symbols[i].range);
+                            break;
+                        }
+                    }
+                });
+                return text;
+            }
+        }
     }
     return '';
 }
 
-export function deactivate() {}
+export function deactivate() { }
