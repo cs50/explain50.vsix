@@ -1,0 +1,1 @@
+# copilot50.vsix
