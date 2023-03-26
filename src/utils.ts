@@ -8,7 +8,7 @@ export function decode (str: string) {
     return String(Buffer.from(str, 'base64').toString('binary'));
 }
 
-// Base64 de
+// Base64 decode
 export function encode (str: string) {
     return String(Buffer.from(str, 'binary').toString('base64'));
 }

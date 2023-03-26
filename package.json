@@ -2,8 +2,10 @@
   "name": "copilot50",
   "displayName": "Copilot50",
   "description": "Provide code explanations for learners",
+  "icon": "images/copilot50.png",
   "version": "0.0.1",
   "publisher": "CS50",
+  "preview": true,
   "repository": "https://github.com/cs50/copilot50.vsix",
   "engines": {
     "vscode": "^1.76.0"
@@ -41,7 +43,16 @@
                 "group": "0_workspace@0"
             }
         ]
-    }
+    },
+    "keybindings": [
+        {
+            "command": "copilot50.codeAnalysis",
+            "win": "alt+shift+e",
+            "key": "alt+shift+e",
+            "mac": "alt+shift+e",
+            "when": "editorTextFocus"
+        }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
