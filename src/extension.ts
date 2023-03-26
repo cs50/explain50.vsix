@@ -41,16 +41,7 @@ function init(context: vscode.ExtensionContext) {
 
     // Register a command that is invoked when the code action is selected
     disposable = vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
-        getCodeSnippet()
-        .then((result) => {
-            createWebviewPanel(context);
-            gpt.processPrompt(result[1]).then((response: any) => {
-                if (response && response.length > 0) {
-                    const codeSnippet = codeWrap(result[0], result[1]);
-                    updateWebviewPanel(context, codeSnippet + response);
-                }
-            });
-        });
+        analyzeCode(context);
     });
     context.subscriptions.push(disposable);
 
@@ -59,6 +50,23 @@ function init(context: vscode.ExtensionContext) {
         gpt.unsetApiKey();
     });
     context.subscriptions.push(disposable);
+}
+
+function analyzeCode(context: vscode.ExtensionContext) {
+    getCodeSnippet()
+    .then((result) => {
+        if (result[1].length === 0) {
+            vscode.window.showInformationMessage('No code selected or function definition found.');
+            return;
+        }
+        createWebviewPanel(context);
+        gpt.processPrompt(result[1]).then((response: any) => {
+            if (response && response.length > 0) {
+                const codeSnippet = codeWrap(result[0], result[1]);
+                updateWebviewPanel(context, codeSnippet + response);
+            }
+        });
+    });
 }
 
 // Get the selected text or the current function definition

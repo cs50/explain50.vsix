@@ -21,8 +21,21 @@
         {
             "title": "Copilot50: Remove API Key",
             "command": "copilot50.unsetApiKey"
+        },
+        {
+            "title": "Explain highlighted code",
+            "command": "copilot50.codeAnalysis"
         }
-    ]
+    ],
+    "menus": {
+        "editor/context": [
+            {
+                "command": "copilot50.codeAnalysis",
+                "when": "editorTextFocus",
+                "group": "0_workspace@0"
+            }
+        ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
