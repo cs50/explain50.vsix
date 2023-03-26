@@ -46,6 +46,7 @@ async function processPrompt(codeSnippet: String) {
                 }
             ],
         }).then((res: any) => {
+            console.log(res.data);
             return res.data.choices[0]['message']['content'];
         }).catch((err: any) => {
             errorHandling(err);
@@ -61,7 +62,10 @@ function buildPrompt(codeSnippet: String) {
     const instruction = 'please explain this code snippet to a student';
     const start = '--- Code snippet begins ---';
     const end = '--- Code snippet ends ---';
-    return `You are ${role}, ${instruction}.\n${start}\n${codeSnippet}\n${end}`;
+
+    // Note that we repeat the instruction again at the end of the
+    // prompt to guard against user bypassing the original instruction
+    return `You are ${role}, ${instruction}.\n${start}\n${codeSnippet}\n${end}\n${instruction.toUpperCase()}`;
 }
 
 // Prompt user to enter api key via vscode popup
