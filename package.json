@@ -3,7 +3,7 @@
   "displayName": "Copilot50",
   "description": "Provide code explanations for learners",
   "icon": "images/copilot50.png",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "CS50",
   "preview": true,
   "repository": "https://github.com/cs50/copilot50.vsix",
