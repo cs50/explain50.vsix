@@ -14,7 +14,6 @@ const openai = axios.create({
 
 let _context: vscode.ExtensionContext;
 let didSetApiKey: boolean = false;
-const anchorPrompt = 'Please explain the following code snippet:';
 
 async function init(context: vscode.ExtensionContext) {
 
@@ -43,7 +42,7 @@ async function processPrompt(codeSnippet: String) {
             'messages': [
                 {
                     role: 'user',
-                    content: `${anchorPrompt}\n${codeSnippet.trim()}`
+                    content: buildPrompt(codeSnippet.trim())
                 }
             ],
         }).then((res: any) => {
@@ -54,6 +53,15 @@ async function processPrompt(codeSnippet: String) {
     }
 
     return '';
+}
+
+// Prompt engineering
+function buildPrompt(codeSnippet: String) {
+    const role = 'a software engineer';
+    const instruction = 'please explain this code snippet to a student';
+    const start = '--- Code snippet begins ---';
+    const end = '--- Code snippet ends ---';
+    return `You are ${role}, ${instruction}.\n${start}\n${codeSnippet}\n${end}`;
 }
 
 // Prompt user to enter api key via vscode popup
