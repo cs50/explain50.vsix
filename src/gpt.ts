@@ -12,27 +12,31 @@ const openai = axios.create({
     }
 });
 
+let commandRemoveApiKey: vscode.Disposable;
 let _context: vscode.ExtensionContext;
 let didSetApiKey: boolean = false;
 const anchorPrompt = 'Please explain the following code snippet:';
 
-export async function init(context: vscode.ExtensionContext) {
+async function init(context: vscode.ExtensionContext) {
 
     // Set vscode context
     _context = context;
 
     // Retrieve API key from global state, if it exists
-    const apiKey = context.globalState.get('copilot50.apiKey');
-    if (apiKey) {
-        openai.defaults.headers['Authorization'] = `Bearer ${decode(String(apiKey))}`;
-        didSetApiKey = true;
+    const storedApiKey = String(context.globalState.get('copilot50.apiKey'));
+    if (storedApiKey) {
+        setApiKey(decode(storedApiKey));
     }
 }
 
-export async function processPrompt(codeSnippet: String) {
+async function processPrompt(codeSnippet: String) {
 
     // Check if API key is set
-    if (!didSetApiKey) { await setApiKey(_context); }
+    if (!didSetApiKey) {
+        await requestApiKey().catch((err) => {
+            errorHandling(err);
+        });
+    }
 
     if (didSetApiKey) {
         return await openai.post('/chat/completions', {
@@ -53,41 +57,59 @@ export async function processPrompt(codeSnippet: String) {
 }
 
 // prompt user to enter api key via vscode popup
-async function setApiKey(context: vscode.ExtensionContext) {
+async function requestApiKey() {
     await vscode.window.showInputBox({
         prompt: 'Please enter your OpenAI API key',
         placeHolder: 'sk-',
         ignoreFocusOut: true,
     }).then((value) => {
         if (value) {
-            openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
-            context.globalState.update('copilot50.apiKey', encode(value.trim()));
-            didSetApiKey = true;
+            setApiKey(value);
         } else {
-            vscode.window.showErrorMessage('Failed to set API key');
+            throw new Error('No API key provided');
         }
-        throw new Error('No API key provided');
     });
+}
+
+function setApiKey(value: string) {
+    openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
+    _context.globalState.update('copilot50.apiKey', encode(value.trim()));
+    didSetApiKey = true;
+
+    // Register a command to remove api key
+    commandRemoveApiKey = vscode.commands.registerCommand('copilot50.removeApiKey', () => {
+        removeApiKey();
+    });
+    _context.subscriptions.push(commandRemoveApiKey);
+}
+
+function removeApiKey() {
+    delete openai.defaults.headers['Authorization'];
+    _context.globalState.update('copilot50.apiKey', undefined);
+    didSetApiKey = false;
+    commandRemoveApiKey.dispose();
 }
 
 function errorHandling(err: any) {
     console.log(err);
     try {
-        const errorResponse = err.response.data['error'];
-        console.log(errorResponse);
-        vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['code']}`);
-        if (errorResponse['code'] === 'invalid_api_key') {
-            vscode.window.showErrorMessage(errorResponse['message']);
-            delete openai.defaults.headers['Authorization'];
-            _context.globalState.update('copilot50.apiKey', undefined);
-            didSetApiKey = false;
+        if ('response' in err) {
+            const errorResponse = err.response.data['error'];
+            console.log(errorResponse);
+            vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['code']}`);
+            if (errorResponse['code'] === 'invalid_api_key') {
+                vscode.window.showErrorMessage(errorResponse['message']);
+                removeApiKey();
+            }
         }
     }
     catch (e) {
         console.log(e);
-        vscode.window.showErrorMessage('Failed to execute request');
+        vscode.window.showErrorMessage(`Unknown error occurred: ${e}`);
     }
     finally {
         disposeWebview();
     }
 }
+
+export { init, processPrompt, removeApiKey };
