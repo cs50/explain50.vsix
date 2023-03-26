@@ -64,7 +64,7 @@ async function requestApiKey() {
     }).then((value) => {
         if (value) {
             setApiKey(value);
-            vscode.window.showInformationMessage("API key set.");
+            vscode.window.showInformationMessage("API key set successfully");
         } else {
             throw new Error('No API key provided');
         }
@@ -87,9 +87,9 @@ function unsetApiKey() {
         delete openai.defaults.headers['Authorization'];
         _context.globalState.update('copilot50.apiKey', undefined);
         didSetApiKey = false;
-        vscode.window.showInformationMessage("API key removed.");
+        vscode.window.showInformationMessage("API key removed");
     } else {
-        vscode.window.showWarningMessage("No API key found.");
+        vscode.window.showWarningMessage("API key not found");
     }
 }
 
