@@ -17,17 +17,6 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "configuration": [
-      {
-        "title": "OpenAI",
-        "properties": {
-          "copilot50.apikey": {
-            "type": "string",
-            "description": "API key for OpenAI API"
-          }
-        }
-      }
-    ],
     "languages": [
       {
         "id": "python",

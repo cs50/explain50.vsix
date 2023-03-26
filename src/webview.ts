@@ -42,7 +42,7 @@ export function createWebviewPanel(context: vscode.ExtensionContext, content: st
         </body>
         <script src="${highlightjsUri}"></script>
     </html>`.trim();
-    
+
     panel.webview.html = htmlString;
 }
 

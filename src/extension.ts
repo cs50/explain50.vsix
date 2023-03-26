@@ -4,7 +4,10 @@ import { codeWrap } from './utils';
 import { createWebviewPanel } from './webview';
 
 export function activate(context: vscode.ExtensionContext) {
+    init(context);
+}
 
+function init(context: vscode.ExtensionContext) {
     // Register a code action provider for the typescript and typescriptreact languages.
     let disposable = vscode.languages.registerCodeActionsProvider(
         ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'],
@@ -40,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
                 if (response.length > 0) {
                     const codeSnippet = codeWrap(result[0], result[1]);
                     console.log(codeSnippet + response);
-                    createWebviewPanel(context, codeSnippet + response); 
+                    createWebviewPanel(context, codeSnippet + response);
                 }
             });
         });
