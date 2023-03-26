@@ -70,13 +70,7 @@ function analyzeCode(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage('No code selected or current file is not supported.');
             return;
         }
-        createWebviewPanel(context);
-        gpt.processPrompt(text).then((response: any) => {
-            if (response && response.length > 0) {
-                const codeSnippet = codeBlock(languageId, text);
-                updateWebviewPanel(context, codeSnippet.concat(response));
-            }
-        });
+        gpt.processPrompt(languageId, text);
     });
 }
 

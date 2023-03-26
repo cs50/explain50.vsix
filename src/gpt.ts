@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as vscode from 'vscode';
-import { encode, decode } from './utils';
-import { disposeWebview } from './webview';
+import { encode, decode, codeBlock } from './utils';
+import { createWebviewPanel, disposeWebview, updateWebviewPanel } from './webview';
 const { Configuration, OpenAIApi } = require("openai");
 
 let openai: any;
@@ -22,7 +22,7 @@ async function init(context: vscode.ExtensionContext) {
     }
 }
 
-async function processPrompt(codeSnippet: String) {
+async function processPrompt(languageId: string, codeSnippet: string) {
 
     // Check if API key is set
     if (!didSetApiKey) {
@@ -32,24 +32,45 @@ async function processPrompt(codeSnippet: String) {
     }
 
     if (didSetApiKey) {
-        return await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo',
-            messages: [
-                {
-                    role: 'user',
-                    content: buildPrompt(codeSnippet.trim())
-                }
-            ],
-            temperature: 0
-        }).then((res: any) => {
-            console.log(res.data);
-            return res.data.choices[0]['message']['content'];
-        }).catch((err: any) => {
-            errorHandling(err);
-        });
-    }
+        createWebviewPanel(_context);
+        try {
+            const response = await openai.createChatCompletion({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    {
+                        role: 'user',
+                        content: buildPrompt(codeSnippet.trim())
+                    }
+                ],
+                temperature: 0,
+                stream: true
+            }, { responseType: 'stream' });
 
-    return '';
+            // https://platform.openai.com/docs/api-reference/chat/create#chat/create-stream
+            // https://github.com/openai/openai-node/issues/18#issuecomment-1369996933
+            let buffer = '';
+            response.data.on('data', (data: { toString: () => string; }) => {
+                const lines = data.toString().split('\n').filter((line: string) => line.trim() !== '');
+                for (const line of lines) {
+                    const message = line.replace(/^data: /, '');
+                    if (message === '[DONE]') {
+                        return; // Stream finished
+                    }
+                    try {
+                        const content = JSON.parse(message).choices[0].delta.content;
+                        if (content !== undefined) {
+                            buffer += content;
+                        }
+                    } catch (error) {
+                        console.error('Could not JSON parse stream message', message, error);
+                    }
+                }
+                updateWebviewPanel(_context, codeBlock(languageId, codeSnippet).concat(buffer));
+            });
+        } catch (error: any) {
+            errorHandling(error);
+        }
+    }
 }
 
 // Prompt engineering
@@ -106,19 +127,27 @@ function unsetApiKey() {
     }
 }
 
-function errorHandling(err: any) {
-    console.log(err);
+function errorHandling(error: any) {
     try {
-        if ('response' in err) {
-            const errorResponse = err.response.data['error'];
-            console.log(errorResponse);
-            vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['type']}`);
-
-            // Remove the API key if it is invalid
-            if (errorResponse['code'] === 'invalid_api_key') {
-                vscode.window.showErrorMessage(errorResponse['message']);
-                unsetApiKey();
-            }
+        if (error.response?.status) {
+            console.error(error.response.status, error.message);
+            error.response.data.on('data', (data: { toString: () => any; }) => {
+                const message = data.toString();
+                try {
+                    const parsed = JSON.parse(message);
+                    if (parsed.error.code === 'invalid_api_key') {
+                        unsetApiKey();
+                    }
+                    vscode.window.showErrorMessage('An error occurred during OpenAI request: ' + parsed.error.message);
+                    console.error('An error occurred during OpenAI request: ', parsed);
+                } catch(error) {
+                    vscode.window.showErrorMessage('An error occurred during OpenAI request: ' + message);
+                    console.error('An error occurred during OpenAI request: ', message);
+                }
+            });
+        } else {
+            vscode.window.showErrorMessage('An error occurred during OpenAI request, please check the console for more details');
+            console.error('An error occurred during OpenAI request', error);
         }
     }
     catch (e) {
