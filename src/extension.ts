@@ -23,7 +23,7 @@ function init(context: vscode.ExtensionContext) {
             provideCodeActions(document, range) {
 
                 // Create a code action.
-                const action = new vscode.CodeAction('Explain Highligted Code', vscode.CodeActionKind.QuickFix);
+                const action = new vscode.CodeAction('Explain highligted code', vscode.CodeActionKind.QuickFix);
 
                 // Set the command that is executed when the code action is selected.
                 action.command = {

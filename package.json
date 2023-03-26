@@ -31,7 +31,7 @@
             "command": "copilot50.unsetApiKey"
         },
         {
-            "title": "Explain highlighted code",
+            "title": "Explain Highlighted Code",
             "command": "copilot50.codeAnalysis"
         }
     ],
