@@ -3,15 +3,10 @@
 import * as vscode from 'vscode';
 import { encode, decode } from './utils';
 import { disposeWebview } from './webview';
-const axios = require('axios');
+const { Configuration, OpenAIApi } = require("openai");
 
-const openai = axios.create({
-    baseURL: 'https://api.openai.com/v1',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-});
-
+let openai: any;
+let configuration: any;
 let _context: vscode.ExtensionContext;
 let didSetApiKey: boolean = false;
 
@@ -37,7 +32,7 @@ async function processPrompt(codeSnippet: String) {
     }
 
     if (didSetApiKey) {
-        return await openai.post('/chat/completions', {
+        return await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             messages: [
                 {
@@ -45,6 +40,7 @@ async function processPrompt(codeSnippet: String) {
                     content: buildPrompt(codeSnippet.trim())
                 }
             ],
+            temperature: 0
         }).then((res: any) => {
             console.log(res.data);
             return res.data.choices[0]['message']['content'];
@@ -84,10 +80,13 @@ async function requestApiKey() {
     });
 }
 
-// Set API key in global state and in axios header
+// Set API key in global state
 function setApiKey(value: string) {
     try {
-        openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
+        configuration = new Configuration({
+            apiKey: value,
+        });
+        openai = new OpenAIApi(configuration);
         _context.globalState.update('copilot50.apiKey', encode(value.trim()));
         didSetApiKey = true;
     } catch (e) {
@@ -99,7 +98,6 @@ function setApiKey(value: string) {
 // Remove API key from global state and unset it
 function unsetApiKey() {
     if (didSetApiKey) {
-        delete openai.defaults.headers['Authorization'];
         _context.globalState.update('copilot50.apiKey', undefined);
         didSetApiKey = false;
         vscode.window.showInformationMessage("API key removed");
@@ -114,7 +112,7 @@ function errorHandling(err: any) {
         if ('response' in err) {
             const errorResponse = err.response.data['error'];
             console.log(errorResponse);
-            vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['code']}`);
+            vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['type']}`);
 
             // Remove the API key if it is invalid
             if (errorResponse['code'] === 'invalid_api_key') {
