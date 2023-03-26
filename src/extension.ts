@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as gpt from './gpt';
 import { codeWrap } from './utils';
-import { createWebviewPanel } from './webview';
+import { createWebviewPanel, updateWebviewPanel } from './webview';
 
 export function activate(context: vscode.ExtensionContext) {
     init(context);
@@ -39,11 +39,12 @@ function init(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
         getCodeSnippet()
         .then((result) => {
+            createWebviewPanel(context);
             gpt.processPrompt(result[1]).then((response: any) => {
                 if (response.length > 0) {
                     const codeSnippet = codeWrap(result[0], result[1]);
                     console.log(codeSnippet + response);
-                    createWebviewPanel(context, codeSnippet + response);
+                    updateWebviewPanel(context, codeSnippet + response);
                 }
             });
         });

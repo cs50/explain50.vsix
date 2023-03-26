@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as vscode from 'vscode';
+import { disposeWebview } from './webview';
 const axios = require('axios');
 
 const openai = axios.create({
@@ -21,7 +22,6 @@ export async function processPrompt(codeSnippet: String) {
         });
     }
     if (didSetApiKey) {
-        vscode.window.showInformationMessage('Requesting code analysis...');
         return await openai.post('/chat/completions', {
             'model': 'gpt-3.5-turbo',
             'messages': [
@@ -51,6 +51,7 @@ async function setApiKey() {
             didSetApiKey = true;
         }
         else {
+            disposeWebview();
             throw new Error('No API key provided');
         }
     });
@@ -59,8 +60,8 @@ async function setApiKey() {
 function errorHandling(err: any) {
     const errorResponse = err.response.data['error'];
     console.log(errorResponse);
+    disposeWebview();
     vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['code']}`);
-
     if (errorResponse['code'] === 'invalid_api_key') {
         vscode.window.showErrorMessage(errorResponse['message']);
         didSetApiKey = false;
