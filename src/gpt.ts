@@ -12,7 +12,6 @@ const openai = axios.create({
     }
 });
 
-let commandRemoveApiKey: vscode.Disposable;
 let _context: vscode.ExtensionContext;
 let didSetApiKey: boolean = false;
 const anchorPrompt = 'Please explain the following code snippet:';
@@ -23,9 +22,9 @@ async function init(context: vscode.ExtensionContext) {
     _context = context;
 
     // Retrieve API key from global state, if it exists
-    const storedApiKey = String(context.globalState.get('copilot50.apiKey'));
-    if (storedApiKey) {
-        setApiKey(decode(storedApiKey));
+    const storedApiKey = context.globalState.get('copilot50.apiKey');
+    if (storedApiKey !== undefined) {
+        setApiKey(decode(String(storedApiKey)));
     }
 }
 
@@ -75,19 +74,17 @@ function setApiKey(value: string) {
     openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
     _context.globalState.update('copilot50.apiKey', encode(value.trim()));
     didSetApiKey = true;
-
-    // Register a command to remove api key
-    commandRemoveApiKey = vscode.commands.registerCommand('copilot50.removeApiKey', () => {
-        removeApiKey();
-    });
-    _context.subscriptions.push(commandRemoveApiKey);
 }
 
-function removeApiKey() {
-    delete openai.defaults.headers['Authorization'];
-    _context.globalState.update('copilot50.apiKey', undefined);
-    didSetApiKey = false;
-    commandRemoveApiKey.dispose();
+function unsetApiKey() {
+    if (didSetApiKey) {
+        delete openai.defaults.headers['Authorization'];
+        _context.globalState.update('copilot50.apiKey', undefined);
+        didSetApiKey = false;
+        vscode.window.showInformationMessage("API key removed.");
+    } else {
+        vscode.window.showWarningMessage("No API key found.");
+    }
 }
 
 function errorHandling(err: any) {
@@ -99,7 +96,7 @@ function errorHandling(err: any) {
             vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['code']}`);
             if (errorResponse['code'] === 'invalid_api_key') {
                 vscode.window.showErrorMessage(errorResponse['message']);
-                removeApiKey();
+                unsetApiKey();
             }
         }
     }
@@ -112,4 +109,4 @@ function errorHandling(err: any) {
     }
 }
 
-export { init, processPrompt, removeApiKey };
+export { init, processPrompt, unsetApiKey };

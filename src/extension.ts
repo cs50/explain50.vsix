@@ -53,6 +53,12 @@ function init(context: vscode.ExtensionContext) {
         });
     });
     context.subscriptions.push(disposable);
+
+    // Register a command to remove api key
+    disposable = vscode.commands.registerCommand('copilot50.unsetApiKey', () => {
+        gpt.unsetApiKey();
+    });
+    context.subscriptions.push(disposable);
 }
 
 // Get the selected text or the current function definition

@@ -17,18 +17,11 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "languages": [
-      {
-        "id": "python",
-        "extensions": [
-          ".py"
-        ],
-        "aliases": [
-          "Python",
-          "py"
-        ],
-        "filenames": []
-      }
+    "commands": [
+        {
+            "title": "Copilot50: Remove API Key",
+            "command": "copilot50.unsetApiKey"
+        }
     ]
   },
   "scripts": {
