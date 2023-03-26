@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as gpt from './gpt';
+import { codeWrap } from './utils';
+import { createWebviewPanel } from './webview';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -32,37 +34,30 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register a command that is invoked when the code action is selected
     disposable = vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
-        selectedEditorText()
-        .then((text) => {
-            gpt.processPrompt(text).then((response: any) => {
-                if (response.length > 0) { createWebviewPanel(response); }
+        getCodeSnippet()
+        .then((result) => {
+            gpt.processPrompt(result[1]).then((response: any) => {
+                if (response.length > 0) {
+                    const codeSnippet = codeWrap(result[0], result[1]);
+                    console.log(codeSnippet + response);
+                    createWebviewPanel(context, codeSnippet + response); 
+                }
             });
         });
     });
     context.subscriptions.push(disposable);
 }
 
-function createWebviewPanel(content: string) {
-    const panel = vscode.window.createWebviewPanel(
-        'codeAnalysis',
-        'Code Analysis',
-        vscode.ViewColumn.Beside,
-        {
-            enableScripts: true,
-            retainContextWhenHidden: true
-        }
-    );
-    panel.webview.html = content;
-}
-
-async function selectedEditorText() {
+// Get the selected text or the current function definition
+async function getCodeSnippet() {
     const editor = vscode.window.activeTextEditor;
     if (editor) {
+        const languageId = editor.document.languageId;
         let selection = editor.selection;
         let text = editor.document.getText(selection);
 
         // if text is selected, return it
-        if (text.length > 0) { return text; }
+        if (text.length > 0) { return [languageId, text]; }
 
         // if no text is selected, get current function definition
         if (text.length === 0) {
@@ -83,11 +78,11 @@ async function selectedEditorText() {
                         }
                     }
                 });
-                return text;
+                return [languageId, text];
             }
         }
     }
-    return '';
+    return ['', ''];
 }
 
 export function deactivate() { }
