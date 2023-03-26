@@ -54,6 +54,7 @@ async function processPrompt(languageId: string, codeSnippet: string) {
                 for (const line of lines) {
                     const message = line.replace(/^data: /, '');
                     if (message === '[DONE]') {
+                        updateWebviewPanel(_context, codeBlock(languageId, codeSnippet).concat(buffer));
                         return; // Stream finished
                     }
                     try {
@@ -65,7 +66,9 @@ async function processPrompt(languageId: string, codeSnippet: string) {
                         console.error('Could not JSON parse stream message', message, error);
                     }
                 }
-                updateWebviewPanel(_context, codeBlock(languageId, codeSnippet).concat(buffer));
+                if (vscode.env.uiKind !== vscode.UIKind.Web) {
+                    updateWebviewPanel(_context, codeBlock(languageId, codeSnippet).concat(buffer));
+                }
             });
         } catch (error: any) {
             errorHandling(error);
