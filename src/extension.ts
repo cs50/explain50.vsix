@@ -8,6 +8,10 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function init(context: vscode.ExtensionContext) {
+
+    // Initialize GPT service
+    gpt.init(context);
+
     // Register a code action provider for the typescript and typescriptreact languages.
     let disposable = vscode.languages.registerCodeActionsProvider(
         ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'],
@@ -41,9 +45,8 @@ function init(context: vscode.ExtensionContext) {
         .then((result) => {
             createWebviewPanel(context);
             gpt.processPrompt(result[1]).then((response: any) => {
-                if (response.length > 0) {
+                if (response && response.length > 0) {
                     const codeSnippet = codeWrap(result[0], result[1]);
-                    console.log(codeSnippet + response);
                     updateWebviewPanel(context, codeSnippet + response);
                 }
             });
@@ -86,6 +89,8 @@ async function getCodeSnippet() {
             }
         }
     }
+
+    // if no text is selected and no function definition is found, return empty string
     return ['', ''];
 }
 
