@@ -45,6 +45,11 @@ function init(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    // Register a command to set api key
+    disposable = vscode.commands.registerCommand('copilot50.setApiKey', () => {
+        gpt.requestApiKey();
+    });
+
     // Register a command to remove api key
     disposable = vscode.commands.registerCommand('copilot50.unsetApiKey', () => {
         gpt.unsetApiKey();

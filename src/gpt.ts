@@ -71,9 +71,15 @@ async function requestApiKey() {
 }
 
 function setApiKey(value: string) {
-    openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
-    _context.globalState.update('copilot50.apiKey', encode(value.trim()));
-    didSetApiKey = true;
+    try {
+        openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
+        _context.globalState.update('copilot50.apiKey', encode(value.trim()));
+        didSetApiKey = true;
+        vscode.window.showInformationMessage("API key set.");
+    } catch (e) {
+        console.log(e);
+        vscode.window.showErrorMessage(`Failed to set API key: ${e}`);
+    }
 }
 
 function unsetApiKey() {
@@ -109,4 +115,4 @@ function errorHandling(err: any) {
     }
 }
 
-export { init, processPrompt, unsetApiKey };
+export { init, processPrompt, requestApiKey, unsetApiKey };

@@ -1,7 +1,7 @@
 {
   "name": "copilot50",
   "displayName": "Copilot50",
-  "description": "",
+  "description": "Provide code explanations for learners",
   "version": "0.0.1",
   "publisher": "CS50",
   "repository": "https://github.com/cs50/copilot50.vsix",
@@ -10,6 +10,8 @@
   },
   "categories": [
     "Education",
+    "Programming Languages",
+    "Snippets",
     "Other"
   ],
   "activationEvents": [
@@ -18,6 +20,10 @@
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
+        {
+            "title": "Copilot50: Set API Key",
+            "command": "copilot50.setApiKey"
+        },
         {
             "title": "Copilot50: Remove API Key",
             "command": "copilot50.unsetApiKey"
