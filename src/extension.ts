@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as gpt from './gpt';
-import { codeWrap } from './utils';
+import { codeBlock } from './utils';
 import { createWebviewPanel, updateWebviewPanel } from './webview';
 
 const supportedLanguages = ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'];
@@ -64,15 +64,17 @@ function init(context: vscode.ExtensionContext) {
 function analyzeCode(context: vscode.ExtensionContext) {
     getCodeSnippet()
     .then((result) => {
-        if (result[1].length === 0) {
+        const languageId = result[0];
+        const text = result[1];
+        if (text.length === 0) {
             vscode.window.showInformationMessage('No code selected or current file is not supported.');
             return;
         }
         createWebviewPanel(context);
-        gpt.processPrompt(result[1]).then((response: any) => {
+        gpt.processPrompt(text).then((response: any) => {
             if (response && response.length > 0) {
-                const codeSnippet = codeWrap(result[0], result[1]);
-                updateWebviewPanel(context, codeSnippet + response);
+                const codeSnippet = codeBlock(languageId, text);
+                updateWebviewPanel(context, codeSnippet.concat(response));
             }
         });
     });

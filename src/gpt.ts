@@ -38,8 +38,8 @@ async function processPrompt(codeSnippet: String) {
 
     if (didSetApiKey) {
         return await openai.post('/chat/completions', {
-            'model': 'gpt-3.5-turbo',
-            'messages': [
+            model: 'gpt-3.5-turbo',
+            messages: [
                 {
                     role: 'user',
                     content: buildPrompt(codeSnippet.trim())
