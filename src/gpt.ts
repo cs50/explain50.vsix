@@ -64,6 +64,7 @@ async function requestApiKey() {
     }).then((value) => {
         if (value) {
             setApiKey(value);
+            vscode.window.showInformationMessage("API key set.");
         } else {
             throw new Error('No API key provided');
         }
@@ -75,7 +76,6 @@ function setApiKey(value: string) {
         openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
         _context.globalState.update('copilot50.apiKey', encode(value.trim()));
         didSetApiKey = true;
-        vscode.window.showInformationMessage("API key set.");
     } catch (e) {
         console.log(e);
         vscode.window.showErrorMessage(`Failed to set API key: ${e}`);
