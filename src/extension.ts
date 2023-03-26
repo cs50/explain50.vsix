@@ -3,6 +3,8 @@ import * as gpt from './gpt';
 import { codeWrap } from './utils';
 import { createWebviewPanel, updateWebviewPanel } from './webview';
 
+const supportedLanguages = ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'];
+
 export function activate(context: vscode.ExtensionContext) {
     init(context);
 }
@@ -14,7 +16,7 @@ function init(context: vscode.ExtensionContext) {
 
     // Register a code action provider for the typescript and typescriptreact languages.
     let disposable = vscode.languages.registerCodeActionsProvider(
-        ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'],
+        supportedLanguages,
         {
 
             // Provide code actions for the given document and range.
@@ -61,7 +63,7 @@ function analyzeCode(context: vscode.ExtensionContext) {
     getCodeSnippet()
     .then((result) => {
         if (result[1].length === 0) {
-            vscode.window.showInformationMessage('No code selected or function definition found.');
+            vscode.window.showInformationMessage('No code selected or current file is not supported.');
             return;
         }
         createWebviewPanel(context);
@@ -77,7 +79,7 @@ function analyzeCode(context: vscode.ExtensionContext) {
 // Get the selected text or the current function definition
 async function getCodeSnippet() {
     const editor = vscode.window.activeTextEditor;
-    if (editor) {
+    if (editor && supportedLanguages.includes(editor.document.languageId)) {
         const languageId = editor.document.languageId;
         let selection = editor.selection;
         let text = editor.document.getText(selection);
