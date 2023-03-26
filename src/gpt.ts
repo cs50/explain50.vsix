@@ -52,10 +52,11 @@ async function processPrompt(codeSnippet: String) {
             errorHandling(err);
         });
     }
+
     return '';
 }
 
-// prompt user to enter api key via vscode popup
+// Prompt user to enter api key via vscode popup
 async function requestApiKey() {
     await vscode.window.showInputBox({
         prompt: 'Please enter your OpenAI API key',
@@ -71,6 +72,7 @@ async function requestApiKey() {
     });
 }
 
+// Set API key in global state and in axios header
 function setApiKey(value: string) {
     try {
         openai.defaults.headers['Authorization'] = `Bearer ${value.trim()}`;
@@ -82,6 +84,7 @@ function setApiKey(value: string) {
     }
 }
 
+// Remove API key from global state and unset it
 function unsetApiKey() {
     if (didSetApiKey) {
         delete openai.defaults.headers['Authorization'];
@@ -100,6 +103,8 @@ function errorHandling(err: any) {
             const errorResponse = err.response.data['error'];
             console.log(errorResponse);
             vscode.window.showErrorMessage(`Failed to execute request: ${errorResponse['code']}`);
+
+            // Remove the API key if it is invalid
             if (errorResponse['code'] === 'invalid_api_key') {
                 vscode.window.showErrorMessage(errorResponse['message']);
                 unsetApiKey();

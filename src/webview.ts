@@ -8,7 +8,7 @@ md.use(highlightjs);
 const STATICS_FOLDER = 'statics';
 let panel: vscode.WebviewPanel | undefined;
 
-export function createWebviewPanel(context: vscode.ExtensionContext) {
+function createWebviewPanel(context: vscode.ExtensionContext) {
     panel = vscode.window.createWebviewPanel(
         'codeAnalysis',
         'Code Analysis',
@@ -18,11 +18,11 @@ export function createWebviewPanel(context: vscode.ExtensionContext) {
             retainContextWhenHidden: true
         }
     );
-
     panel.webview.html = loadingSpinner();
 }
 
-export function updateWebviewPanel(context: vscode.ExtensionContext, content: string) {
+// Parse markdown content and render html string
+function updateWebviewPanel(context: vscode.ExtensionContext, content: string) {
     if (panel) {
         const styleUri = panel.webview.asWebviewUri(
             vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/css/style.css`
@@ -53,10 +53,15 @@ export function updateWebviewPanel(context: vscode.ExtensionContext, content: st
     }
 }
 
-export function disposeWebview() {
+function disposeWebview() {
     if (panel) {
         panel.dispose();
     }
+}
+
+// Parse markdown to html
+function parseMarkdown(text: string) {
+    return md.render(text);
 }
 
 function loadingSpinner() {
@@ -96,7 +101,5 @@ function loadingSpinner() {
     return html;
 }
 
-// parse markdown to html
-function parseMarkdown(text: string) {
-    return md.render(text);
-}
+
+export { createWebviewPanel, updateWebviewPanel, disposeWebview };

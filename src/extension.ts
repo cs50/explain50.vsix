@@ -51,6 +51,7 @@ function init(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('copilot50.setApiKey', () => {
         gpt.requestApiKey();
     });
+    context.subscriptions.push(disposable);
 
     // Register a command to remove api key
     disposable = vscode.commands.registerCommand('copilot50.unsetApiKey', () => {
@@ -59,6 +60,7 @@ function init(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
+// Analyze the selected code snippet or the current function definition
 function analyzeCode(context: vscode.ExtensionContext) {
     getCodeSnippet()
     .then((result) => {
@@ -84,10 +86,10 @@ async function getCodeSnippet() {
         let selection = editor.selection;
         let text = editor.document.getText(selection);
 
-        // if text is selected, return it
+        // If text is selected, return it
         if (text.length > 0) { return [languageId, text]; }
 
-        // if no text is selected, get current function definition
+        // If no text is selected, get current function definition
         if (text.length === 0) {
             const line = editor.document.lineAt(selection.start.line);
             let textLine = line.text;
@@ -111,7 +113,7 @@ async function getCodeSnippet() {
         }
     }
 
-    // if no text is selected and no function definition is found, return empty string
+    // If no text is selected and no function definition is found, return empty string
     return ['', ''];
 }
 

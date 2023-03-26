@@ -1,14 +1,16 @@
 // Wrap text in a code block
-export function codeWrap(languageId: string, text: string) {
+function codeWrap(languageId: string, text: string) {
     return '```' + languageId + '\n' + text + '\n```\n';
 }
 
-// Base64 encode
-export function decode (str: string) {
+// Base64 encoding
+function decode (str: string) {
     return String(Buffer.from(str, 'base64').toString('binary'));
 }
 
-// Base64 decode
-export function encode (str: string) {
+// Base64 decoding
+function encode (str: string) {
     return String(Buffer.from(str, 'binary').toString('base64'));
 }
+
+export { codeWrap, decode, encode };
