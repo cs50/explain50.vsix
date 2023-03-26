@@ -31,17 +31,15 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // Register a command that is invoked when the code action is selected
-    context.subscriptions.push(
-        vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
-            selectedEditorText().then((text) => {
-                gpt.processPrompt(text).then((response: any) => {
-                    if (response.length > 0) {
-                        createWebviewPanel(response);
-                    }
-                });
+    disposable = vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
+        selectedEditorText()
+        .then((text) => {
+            gpt.processPrompt(text).then((response: any) => {
+                if (response.length > 0) { createWebviewPanel(response); }
             });
-        }
-    ));
+        });
+    });
+    context.subscriptions.push(disposable);
 }
 
 function createWebviewPanel(content: string) {
@@ -63,16 +61,18 @@ async function selectedEditorText() {
         let selection = editor.selection;
         let text = editor.document.getText(selection);
 
+        // if text is selected, return it
         if (text.length > 0) { return text; }
 
+        // if no text is selected, get current function definition
         if (text.length === 0) {
-
-            // get current line from editor
             const line = editor.document.lineAt(selection.start.line);
             let textLine = line.text;
+            const outline = vscode.commands.executeCommand(
+                'vscode.executeDocumentSymbolProvider',
+                editor.document.uri
+            );
 
-            // get current function definition from vscode outline
-            const outline = vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', editor.document.uri);
             if (outline) {
                 await outline.then((symbols: any) => {
                     for (let i = 0; i < symbols.length; i++) {
