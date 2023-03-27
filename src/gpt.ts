@@ -102,14 +102,19 @@ function buildPrompt(languageId: string, codeSnippet: string) {
     // Designate role of model
     const role = 'a software engineer';
 
+    // Define context
+    const context = 'a learner is having trouble understanding the codes';
+
+    // Designate the role of the audience
+    const audience = 'a student';
+
     // Tell the model what kind of code snippet it is
-    const task = `explain this ${languageId} code snippet to a student`;
+    const task = `Explain this ${languageId} programming language code snippet to ${audience}`;
 
     // Special instructions for the model
     const specialInstructions =
-        'Make sure to explain the code snippet in plain English, ' +
-        'offer code examples as needed, but not solutions. ' +
-        'Use proper grammar and punctuation.';
+        'Make sure to explain the code snippet in plain English. ' +
+        'Offer code examples as needed, but not solutions or completion.';
 
     const start = '--- Code snippet begins ---';
     const end = '--- Code snippet ends ---';
@@ -118,6 +123,7 @@ function buildPrompt(languageId: string, codeSnippet: string) {
     // prompt to guard against user bypassing the original instruction
     const prompt =
         `You are ${role}, ` +
+        `and ${context}. ` +
         `${task}.\n` +
         `${start}\n${codeSnippet.trim()}\n${end}\n` +
         `${specialInstructions}\n`;
