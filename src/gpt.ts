@@ -20,9 +20,20 @@ async function init(context: vscode.ExtensionContext) {
     storedApiKey !== undefined ? setApiKey(decode(String(storedApiKey))) : null;
 }
 
-async function processPrompt(languageId: string, codeSnippet: string, documentName: string) {
+async function moderatePrompt(prompt: string) {
+    const response = await openai.createModeration(
+        { input: prompt, model: 'text-moderation-latest' });
+    const flagged = Boolean(response.data.results[0].flagged);
+    if (flagged) {
+        const message = 'Prompt contains inappropriate content and was flagged by OpenAI';
+        console.error(message);
+        console.error(response.data);
+        vscode.window.showErrorMessage(message);
+        throw new Error(message);
+    }
+}
 
-    // Check if API key is set
+async function processPrompt(languageId: string, codeSnippet: string, documentName: string) {
     if (!didSetApiKey) {
         await requestApiKey().catch((err) => {
             errorHandling(err);
@@ -31,21 +42,22 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
 
     if (didSetApiKey) {
         createWebviewPanel(_context, documentName);
+        const prompt = buildPrompt(languageId, codeSnippet);
         try {
-            const response = await openai.createChatCompletion({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    {
-                        role: 'user',
-                        content: buildPrompt(languageId, codeSnippet)
-                    }
-                ],
-                temperature: 0,
-                stream: true
-            }, { responseType: 'stream' });
+
+            // Check if prompt contains inappropriate content
+            await moderatePrompt(prompt);
+
+            const response = await openai.createChatCompletion(
+                {
+                    model: 'gpt-3.5-turbo',
+                    messages: [{ role: 'user', content: prompt }],
+                    temperature: 0,
+                    stream: true
+                },
+                { responseType: 'stream' });
 
             // Stream response data
-
             // https://platform.openai.com/docs/api-reference/chat/create#chat/create-stream
             // https://github.com/openai/openai-node/issues/18#issuecomment-1369996933
             let buffer = '';
@@ -98,7 +110,6 @@ function buildPrompt(languageId: string, codeSnippet: string) {
         `${task}.\n` +
         `${start}\n${codeSnippet.trim()}\n${end}\n` +
         `${specialInstructions}\n`;
-    console.log(prompt);
     return prompt;
 }
 
