@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as gpt from './gpt';
 import { codeBlock } from './utils';
-import { createWebviewPanel, updateWebviewPanel } from './webview';
 
 const supportedLanguages = ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'];
 
