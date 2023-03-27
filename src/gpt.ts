@@ -73,16 +73,27 @@ async function processPrompt(languageId: string, codeSnippet: string) {
     }
 }
 
-// Prompt engineering
+// Prompt engineering, sets the context for the GPT model to generate a response.
 function buildPrompt(languageId: string, codeSnippet: string) {
+
+    // Designate role of model
     const role = 'a software engineer';
-    const instruction = `please explain this ${languageId} code snippet to a student`;
+
+    // Tell the model what kind of code snippet it is
+    const instruction = `explain this ${languageId} code snippet to a student`;
+
+    // Special instructions for the model
+    const specialInstructions = 'Make sure to explain the code snippet in plain English, offer code examples as needed, and use proper grammar and punctuation.';
     const start = '--- Code snippet begins ---';
     const end = '--- Code snippet ends ---';
 
     // Note that we repeat the instruction again at the end of the
     // prompt to guard against user bypassing the original instruction
-    const prompt = `You are ${role}, ${instruction}.\n${start}\n${codeSnippet.trim()}\n${end}\n${instruction.toUpperCase()}`;
+    const prompt =
+        `You are ${role}, ` +
+        `${instruction}.\n` +
+        `${start}\n${codeSnippet.trim()}\n${end}\n` +
+        `${specialInstructions}\n`;
     console.log(prompt);
     return prompt;
 }
