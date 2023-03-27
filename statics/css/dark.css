@@ -5,3 +5,8 @@ body p {
 pre code {
     white-space: pre-wrap !important;
 }
+
+pre {
+    background-color: #0d1117;
+    padding: 10px;
+}

@@ -18,18 +18,30 @@ function createWebviewPanel(context: vscode.ExtensionContext, documentName: stri
             retainContextWhenHidden: true
         }
     );
+
+    let styleUri;
+    let highlightStyleUri;
+    let lightTheme = [vscode.ColorThemeKind.Light, vscode.ColorThemeKind.HighContrastLight];
+    const isLightTheme = lightTheme.includes(vscode.window.activeColorTheme.kind);
+    if (isLightTheme) {
+        styleUri = panel.webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/css/light.css`
+        ));
+        highlightStyleUri = panel.webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/vendor/highlightjs/11.7.0/styles/github.min.css`));
+    } else {
+        styleUri = panel.webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/css/dark.css`
+        ));
+        highlightStyleUri = panel.webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/vendor/highlightjs/11.7.0/styles/github-dark.min.css`));
+    }
+
     const scriptUri = panel.webview.asWebviewUri(
         vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/js/index.js`));
 
-    const styleUri = panel.webview.asWebviewUri(
-        vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/css/style.css`
-    ));
-
     const highlightjsUri = panel.webview.asWebviewUri(
         vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/vendor/highlightjs/11.7.0/highlight.min.js`));
-
-    const highlightStyleUri = panel.webview.asWebviewUri(
-        vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/vendor/highlightjs/11.7.0/styles/default.min.css`));
 
     const htmlString =
     `<!DOCTYPE html>
