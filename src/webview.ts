@@ -6,10 +6,10 @@ const md = require('markdown-it')();
 md.use(highlightjs);
 
 const STATICS_FOLDER = 'statics';
-let panel: vscode.WebviewPanel | undefined;
+let panels: any = [];
 
 function createWebviewPanel(context: vscode.ExtensionContext, documentName: string) {
-    panel = vscode.window.createWebviewPanel(
+    let panel = vscode.window.createWebviewPanel(
         'codeAnalysis',
         `Code Analysis - ${documentName}`,
         vscode.ViewColumn.Beside,
@@ -82,11 +82,13 @@ function createWebviewPanel(context: vscode.ExtensionContext, documentName: stri
         <script src="${scriptUri}"></script>
     </html>`.trim();
     panel.webview.html = htmlString;
+    panels?.push(panel);
+    return panels.length - 1;
 }
 
-function webviewDeltaUpdate(content: string) {
-    if (panel) {
-        panel.webview.postMessage(
+function webviewDeltaUpdate(id: number, content: string) {
+    if (panels[id]) {
+        panels[id].webview.postMessage(
             {
                 command: 'delta_update',
                 content: md.render(content)
@@ -95,7 +97,10 @@ function webviewDeltaUpdate(content: string) {
 }
 
 function disposeWebview() {
-    panel ? panel.dispose() : null;
+    panels.forEach((panel: any) => {
+        panel.dispose();
+    });
+    panels = [];
 }
 
 export { createWebviewPanel, webviewDeltaUpdate, disposeWebview };

@@ -41,7 +41,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
     }
 
     if (didSetApiKey) {
-        createWebviewPanel(_context, documentName);
+        let panelId = createWebviewPanel(_context, documentName);
         const prompt = buildPrompt(languageId, codeSnippet);
         try {
 
@@ -74,7 +74,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
 
                     // Stream finished, perform final delta update
                     if (message === '[DONE]') {
-                        webviewDeltaUpdate(codeBlock(languageId, codeSnippet) + buffers);
+                        webviewDeltaUpdate(panelId, codeBlock(languageId, codeSnippet) + buffers);
                         return;
                     }
 
@@ -88,7 +88,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
                 }
 
                 // Delta update webview panel with new buffer content
-                webviewDeltaUpdate(codeBlock(languageId, codeSnippet) + buffers);
+                webviewDeltaUpdate(panelId, codeBlock(languageId, codeSnippet) + buffers);
             });
         } catch (error: any) {
             errorHandling(error);
