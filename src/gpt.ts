@@ -37,7 +37,7 @@ async function processPrompt(languageId: string, codeSnippet: string) {
                 messages: [
                     {
                         role: 'user',
-                        content: buildPrompt(codeSnippet.trim())
+                        content: buildPrompt(languageId, codeSnippet)
                     }
                 ],
                 temperature: 0,
@@ -74,15 +74,17 @@ async function processPrompt(languageId: string, codeSnippet: string) {
 }
 
 // Prompt engineering
-function buildPrompt(codeSnippet: String) {
+function buildPrompt(languageId: string, codeSnippet: string) {
     const role = 'a software engineer';
-    const instruction = 'please explain this code snippet to a student';
+    const instruction = `please explain this ${languageId} code snippet to a student`;
     const start = '--- Code snippet begins ---';
     const end = '--- Code snippet ends ---';
 
     // Note that we repeat the instruction again at the end of the
     // prompt to guard against user bypassing the original instruction
-    return `You are ${role}, ${instruction}.\n${start}\n${codeSnippet}\n${end}\n${instruction.toUpperCase()}`;
+    const prompt = `You are ${role}, ${instruction}.\n${start}\n${codeSnippet.trim()}\n${end}\n${instruction.toUpperCase()}`;
+    console.log(prompt);
+    return prompt;
 }
 
 // Prompt user to enter api key via vscode popup
