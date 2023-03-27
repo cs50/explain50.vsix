@@ -20,7 +20,7 @@ async function init(context: vscode.ExtensionContext) {
     storedApiKey !== undefined ? setApiKey(decode(String(storedApiKey))) : null;
 }
 
-async function processPrompt(languageId: string, codeSnippet: string) {
+async function processPrompt(languageId: string, codeSnippet: string, documentName: string) {
 
     // Check if API key is set
     if (!didSetApiKey) {
@@ -30,7 +30,7 @@ async function processPrompt(languageId: string, codeSnippet: string) {
     }
 
     if (didSetApiKey) {
-        createWebviewPanel(_context);
+        createWebviewPanel(_context, documentName);
         try {
             const response = await openai.createChatCompletion({
                 model: 'gpt-3.5-turbo',

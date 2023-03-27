@@ -8,10 +8,10 @@ md.use(highlightjs);
 const STATICS_FOLDER = 'statics';
 let panel: vscode.WebviewPanel | undefined;
 
-function createWebviewPanel(context: vscode.ExtensionContext) {
+function createWebviewPanel(context: vscode.ExtensionContext, documentName: string) {
     panel = vscode.window.createWebviewPanel(
         'codeAnalysis',
-        'Code Analysis',
+        `Code Analysis - ${documentName}`,
         vscode.ViewColumn.Beside,
         {
             enableScripts: true,

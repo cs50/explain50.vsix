@@ -64,25 +64,27 @@ function analyzeCode(context: vscode.ExtensionContext) {
     .then((result) => {
         const languageId = result[0];
         const text = result[1];
+        const fileName = result[2];
         if (text.length === 0) {
             vscode.window.showInformationMessage('No code selected or current file is not supported.');
             return;
         }
-        gpt.processPrompt(languageId, text);
+        gpt.processPrompt(languageId, text, fileName);
     });
 }
 
 // Get the selected text or the current function definition
-async function getCodeSnippet() {
+async function getCodeSnippet():Promise<[string, string, string]> {
     const editor = vscode.window.activeTextEditor;
     if (editor && supportedLanguages.includes(editor.document.languageId)) {
         const languageId = editor.document.languageId;
         let selection = editor.selection;
         let text = editor.document.getText(selection);
+        const fileName = editor.document.fileName.split('/').pop() || '';
 
         // If text is selected, return it
         if (text.length > 0) {
-            return [languageId, text];
+            return [languageId, text, fileName];
         }
 
         // If no text is selected, get current function definition
@@ -104,13 +106,13 @@ async function getCodeSnippet() {
                         }
                     }
                 });
-                return [languageId, text];
+                return [languageId, text, fileName];
             }
         }
     }
 
     // If no text is selected and no function definition is found, return empty string
-    return ['', ''];
+    return ['', '', ''];
 }
 
 export function deactivate() { }
