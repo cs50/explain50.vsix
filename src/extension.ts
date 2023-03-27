@@ -84,8 +84,8 @@ async function getCodeSnippet():Promise<[string, string, string]> {
 
         // If text is selected, return it
         if (text.length > 0) {
-            return [languageId, text, fileName];
-        }
+            return [languageId, beautify(text), fileName];
+          }
 
         // If no text is selected, get current function definition
         if (text.length === 0) {
@@ -106,7 +106,9 @@ async function getCodeSnippet():Promise<[string, string, string]> {
                         }
                     }
                 });
-                return [languageId, text, fileName];
+
+                // remove all spaces on the right
+                return [languageId, beautify(text), fileName];
             }
         }
     }
@@ -115,4 +117,28 @@ async function getCodeSnippet():Promise<[string, string, string]> {
     return ['', '', ''];
 }
 
-export function deactivate() { }
+function beautify(text: string): string {
+    let lines = text.split('\n');
+    let minIndentation = Number.MAX_SAFE_INTEGER;
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        if (line.trim().length > 0) {
+            let indentation = line.search(/\S/);
+            if (indentation >= 0 && indentation < minIndentation) {
+                minIndentation = indentation;
+            }
+        }
+    }
+    let trimmedLines = [];
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        if (line.trim().length > 0) {
+            trimmedLines.push(line.substring(minIndentation));
+        } else {
+            trimmedLines.push('');
+        }
+    }
+    return trimmedLines.join('\n').replace(/\s+$/g, '');
+}
+
+export function deactivate() {}
