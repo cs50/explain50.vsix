@@ -17,9 +17,7 @@ async function init(context: vscode.ExtensionContext) {
 
     // Retrieve API key from global state, if it exists
     const storedApiKey = context.globalState.get('copilot50.apiKey');
-    if (storedApiKey !== undefined) {
-        setApiKey(decode(String(storedApiKey)));
-    }
+    storedApiKey !== undefined ? setApiKey(decode(String(storedApiKey))) : null;
 }
 
 async function processPrompt(languageId: string, codeSnippet: string) {
@@ -46,6 +44,8 @@ async function processPrompt(languageId: string, codeSnippet: string) {
                 stream: true
             }, { responseType: 'stream' });
 
+            // Stream response data
+
             // https://platform.openai.com/docs/api-reference/chat/create#chat/create-stream
             // https://github.com/openai/openai-node/issues/18#issuecomment-1369996933
             let buffer = '';
@@ -58,15 +58,13 @@ async function processPrompt(languageId: string, codeSnippet: string) {
                     }
                     try {
                         const content = JSON.parse(message).choices[0].delta.content;
-                        if (content !== undefined) {
-                            buffer += content;
-                        }
+                        content !== undefined ? buffer += content : null;
                     } catch (error) {
                         console.error('Could not JSON parse stream message', message, error);
                     }
                 }
 
-                // Delta update with new buffer content
+                // Delta update webview panel with new buffer content
                 webviewDeltaUpdate(codeBlock(languageId, codeSnippet).concat(buffer));
             });
         } catch (error: any) {

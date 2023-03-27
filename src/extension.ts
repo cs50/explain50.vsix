@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as gpt from './gpt';
-import { codeBlock } from './utils';
 
 const supportedLanguages = ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'];
 
@@ -82,7 +81,9 @@ async function getCodeSnippet() {
         let text = editor.document.getText(selection);
 
         // If text is selected, return it
-        if (text.length > 0) { return [languageId, text]; }
+        if (text.length > 0) {
+            return [languageId, text];
+        }
 
         // If no text is selected, get current function definition
         if (text.length === 0) {

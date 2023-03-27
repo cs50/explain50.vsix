@@ -54,7 +54,6 @@ function createWebviewPanel(context: vscode.ExtensionContext) {
                     border-radius: 50%;
                     animation: loadingspin 1s linear infinite;
                 }
-
                 @keyframes loadingspin {
                     100% {
                             transform: rotate(360deg)
@@ -75,20 +74,16 @@ function createWebviewPanel(context: vscode.ExtensionContext) {
 
 function webviewDeltaUpdate(content: string) {
     if (panel) {
-        const parsedContent = parseMarkdown(content);
-        panel.webview.postMessage({ command: 'delta_update', content: parsedContent });
+        panel.webview.postMessage(
+            {
+                command: 'delta_update',
+                content: md.render(content)
+            });
     }
 }
 
 function disposeWebview() {
-    if (panel) {
-        panel.dispose();
-    }
-}
-
-// Parse markdown to html
-function parseMarkdown(text: string) {
-    return md.render(text);
+    panel ? panel.dispose() : null;
 }
 
 export { createWebviewPanel, webviewDeltaUpdate, disposeWebview };
