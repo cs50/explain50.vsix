@@ -60,24 +60,35 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             // Stream response data
             // https://platform.openai.com/docs/api-reference/chat/create#chat/create-stream
             // https://github.com/openai/openai-node/issues/18#issuecomment-1369996933
-            let buffer = '';
+            let buffers: string = '';
             response.data.on('data', (data: { toString: () => string; }) => {
+
+                // Split stream data into lines and filter out empty lines
                 const lines = data.toString().split('\n').filter((line: string) => line.trim() !== '');
+
+                // Process each line of stream data
                 for (const line of lines) {
+
+                    // Strip 'data: ' prefix from line
                     const message = line.replace(/^data: /, '');
+
+                    // Stream finished, perform final delta update
                     if (message === '[DONE]') {
-                        return; // Stream finished
+                        webviewDeltaUpdate(codeBlock(languageId, codeSnippet) + buffers);
+                        return;
                     }
+
+                    // Parse JSON message, extract content and update buffer
                     try {
                         const content = JSON.parse(message).choices[0].delta.content;
-                        content !== undefined ? buffer += content : null;
+                        content !== undefined ? buffers += content : null;
                     } catch (error) {
                         console.error('Could not JSON parse stream message', message, error);
                     }
                 }
 
                 // Delta update webview panel with new buffer content
-                webviewDeltaUpdate(codeBlock(languageId, codeSnippet).concat(buffer));
+                webviewDeltaUpdate(codeBlock(languageId, codeSnippet) + buffers);
             });
         } catch (error: any) {
             errorHandling(error);
