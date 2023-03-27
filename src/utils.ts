@@ -3,12 +3,12 @@ function codeBlock(languageId: string, text: string) {
     return '```' + languageId + '\n' + text + '\n```\n';
 }
 
-// Base64 encoding
+// Base64 decoding
 function decode (str: string) {
     return String(Buffer.from(str, 'base64').toString('binary'));
 }
 
-// Base64 decoding
+// Base64 encoding
 function encode (str: string) {
     return String(Buffer.from(str, 'binary').toString('base64'));
 }

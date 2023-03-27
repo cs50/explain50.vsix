@@ -41,7 +41,7 @@ function init(context: vscode.ExtensionContext) {
 
     // Register a command that is invoked when the code action is selected
     disposable = vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
-        analyzeCode(context);
+        analyzeCode();
     });
     context.subscriptions.push(disposable);
 
@@ -59,7 +59,7 @@ function init(context: vscode.ExtensionContext) {
 }
 
 // Analyze the selected code snippet or the current function definition
-function analyzeCode(context: vscode.ExtensionContext) {
+function analyzeCode() {
     getCodeSnippet()
     .then((result) => {
         const languageId = result[0];
