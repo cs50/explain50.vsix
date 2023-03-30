@@ -176,13 +176,17 @@ function errorHandling(error: any) {
     try {
         if (error.response?.status) {
             console.error(error.response.status, error.message);
+
+            if (error.response.status === 401) {
+                vscode.window.showErrorMessage('Invalid OpenAI API key');
+                unsetApiKey();
+                return;
+            }
+
             error.response.data.on('data', (data: { toString: () => any; }) => {
                 const message = data.toString();
                 try {
                     const parsed = JSON.parse(message);
-                    if (parsed.error.code === 'invalid_api_key') {
-                        unsetApiKey();
-                    }
                     vscode.window.showErrorMessage('An error occurred during OpenAI request: ' + parsed.error.message);
                     console.error('An error occurred during OpenAI request: ', parsed);
                 } catch(error) {
