@@ -47,11 +47,16 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
 
             // Check if prompt contains inappropriate content
             await moderatePrompt(prompt);
+            const systemContext = 'You are a software engineer. Your goal is to explain a code snippet to a student. Please do not complete any codes or provide solutions. Explain the code in plain English using correct terminology, grammar, and punctuation. Offer examples as needed, but they are not required.';
 
             const response = await openai.createChatCompletion(
                 {
                     model: 'gpt-3.5-turbo',
-                    messages: [{ role: 'user', content: prompt }],
+                    messages: [
+                        // https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/chatgpt?pivots=programming-language-chat-completions#system-role
+                        { role: 'system', content: systemContext },
+                        { role: 'user', content: prompt }
+                    ],
                     temperature: 0,
                     stream: true
                 },
@@ -99,34 +104,17 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
 // Prompt engineering, sets the context for the GPT model to generate a response.
 function buildPrompt(languageId: string, codeSnippet: string) {
 
-    // Designate role of model
-    const role = 'a software engineer';
-
-    // Define context
-    const context = 'a learner is having trouble understanding the codes';
-
-    // Designate the role of the audience
-    const audience = 'a student';
-
     // Tell the model what kind of code snippet it is
-    const task = `Explain this ${languageId} programming language code snippet to ${audience}`;
-
-    // Special instructions for the model
-    const specialInstructions =
-        'Make sure to explain the code snippet in plain English. ' +
-        'Offer code examples as needed, but not solutions or completion.';
-
+    const task = `Explain this ${languageId} programming language code snippet.`;
     const start = '--- Code snippet begins ---';
     const end = '--- Code snippet ends ---';
 
     // Note that we repeat the instruction again at the end of the
     // prompt to guard against user bypassing the original instruction
     const prompt =
-        `You are ${role}, ` +
-        `and ${context}. ` +
         `${task}.\n` +
-        `${start}\n${codeSnippet.trim()}\n${end}\n` +
-        `${specialInstructions}\n`;
+        `${start}\n${codeSnippet.trim()}\n${end}\n`
+
     return prompt;
 }
 
