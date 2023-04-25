@@ -11,9 +11,9 @@ let panels: any = [];
 function createWebviewPanel(context: vscode.ExtensionContext, documentName: string, lineStart: number, lineEnd: number) {
     let panelTitle;
     if (lineStart === lineEnd) {
-        panelTitle = `Explanation of ${documentName}#L${lineStart}`;
+        panelTitle = `Explain ${documentName}#L${lineStart}`;
     } else {
-        panelTitle = `Explanation of ${documentName}#L${lineStart}-L${lineEnd}`;
+        panelTitle = `Explain ${documentName}#L${lineStart}-L${lineEnd}`;
     }
 
     let panel = vscode.window.createWebviewPanel(
