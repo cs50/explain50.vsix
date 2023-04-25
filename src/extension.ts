@@ -61,20 +61,22 @@ function init(context: vscode.ExtensionContext) {
 // Analyze the selected code snippet or the current function definition
 function analyzeCode() {
     getCodeSnippet()
-    .then((result) => {
-        const languageId = result[0];
-        const text = result[1];
-        const fileName = result[2];
-        if (text.length === 0) {
-            vscode.window.showInformationMessage('No code selected or current file is not supported.');
-            return;
-        }
-        gpt.processPrompt(languageId, text, fileName);
-    });
+        .then((result) => {
+            const languageId = result[0];
+            const text = result[1];
+            const fileName = result[2];
+            const start = result[3];
+            const end = result[4];
+            if (text.length === 0) {
+                vscode.window.showInformationMessage('No code selected or current file is not supported.');
+                return;
+            }
+            gpt.processPrompt(languageId, text, fileName, start, end);
+        });
 }
 
 // Get the selected text or the current function definition
-async function getCodeSnippet():Promise<[string, string, string]> {
+async function getCodeSnippet(): Promise<[string, string, string, number, number]> {
     const editor = vscode.window.activeTextEditor;
     if (editor && supportedLanguages.includes(editor.document.languageId)) {
         const languageId = editor.document.languageId;
@@ -84,8 +86,8 @@ async function getCodeSnippet():Promise<[string, string, string]> {
 
         // If text is selected, return it
         if (text.length > 0) {
-            return [languageId, beautify(text), fileName];
-          }
+            return [languageId, beautify(text), fileName, editor.selection.start.line + 1, editor.selection.end.line + 1];
+        }
 
         // If no text is selected, get current function definition
         if (text.length === 0) {
@@ -108,13 +110,13 @@ async function getCodeSnippet():Promise<[string, string, string]> {
                 });
 
                 // remove all spaces on the right
-                return [languageId, beautify(text), fileName];
+                return [languageId, beautify(text), fileName, editor.selection.start.line + 1, editor.selection.end.line + 1];
             }
         }
     }
 
     // If no text is selected and no function definition is found, return empty string
-    return ['', '', ''];
+    return ['', '', '', 0, 0];
 }
 
 function beautify(text: string): string {
@@ -141,4 +143,4 @@ function beautify(text: string): string {
     return trimmedLines.join('\n').replace(/\s+$/g, '');
 }
 
-export function deactivate() {}
+export function deactivate() { }

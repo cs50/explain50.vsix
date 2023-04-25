@@ -8,10 +8,17 @@ md.use(highlightjs);
 const STATICS_FOLDER = 'statics';
 let panels: any = [];
 
-function createWebviewPanel(context: vscode.ExtensionContext, documentName: string) {
+function createWebviewPanel(context: vscode.ExtensionContext, documentName: string, lineStart: number, lineEnd: number) {
+    let panelTitle;
+    if (lineStart === lineEnd) {
+        panelTitle = `Explanation of ${documentName}#L${lineStart}`;
+    } else {
+        panelTitle = `Explanation of ${documentName}#L${lineStart}-L${lineEnd}`;
+    }
+
     let panel = vscode.window.createWebviewPanel(
         'codeAnalysis',
-        `Code Analysis - ${documentName}`,
+        panelTitle,
         vscode.ViewColumn.Beside,
         {
             enableScripts: true,

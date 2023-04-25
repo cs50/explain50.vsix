@@ -33,7 +33,7 @@ async function moderatePrompt(prompt: string) {
     }
 }
 
-async function processPrompt(languageId: string, codeSnippet: string, documentName: string) {
+async function processPrompt(languageId: string, codeSnippet: string, documentName: string, lineStart: number, lineEnd: number) {
     if (!didSetApiKey) {
         await requestApiKey().catch((err) => {
             errorHandling(err);
@@ -41,7 +41,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
     }
 
     if (didSetApiKey) {
-        let panelId = createWebviewPanel(_context, documentName);
+        let panelId = createWebviewPanel(_context, documentName, lineStart, lineEnd);
         const prompt = buildPrompt(languageId, codeSnippet);
         try {
 
