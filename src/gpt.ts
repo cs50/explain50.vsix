@@ -109,8 +109,7 @@ function buildPrompt(languageId: string, codeSnippet: string) {
     const start = '--- Code snippet begins ---';
     const end = '--- Code snippet ends ---';
 
-    // Note that we repeat the instruction again at the end of the
-    // prompt to guard against user bypassing the original instruction
+    // Build prompt
     const prompt =
         `${task}.\n` +
         `${start}\n${codeSnippet.trim()}\n${end}\n`
