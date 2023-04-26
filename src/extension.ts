@@ -26,7 +26,7 @@ function init(context: vscode.ExtensionContext) {
                 // Set the command that is executed when the code action is selected.
                 action.command = {
                     title: 'Code Analysis',
-                    command: 'copilot50.codeAnalysis'
+                    command: 'explain50.codeAnalysis'
                 };
 
                 // Set the diagnostics that this code action resolves.
@@ -40,19 +40,19 @@ function init(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // Register a command that is invoked when the code action is selected
-    disposable = vscode.commands.registerCommand('copilot50.codeAnalysis', () => {
+    disposable = vscode.commands.registerCommand('explain50.codeAnalysis', () => {
         analyzeCode();
     });
     context.subscriptions.push(disposable);
 
     // Register a command to set api key
-    disposable = vscode.commands.registerCommand('copilot50.setApiKey', () => {
+    disposable = vscode.commands.registerCommand('explain50.setApiKey', () => {
         gpt.requestApiKey();
     });
     context.subscriptions.push(disposable);
 
     // Register a command to remove api key
-    disposable = vscode.commands.registerCommand('copilot50.unsetApiKey', () => {
+    disposable = vscode.commands.registerCommand('explain50.unsetApiKey', () => {
         gpt.unsetApiKey();
     });
     context.subscriptions.push(disposable);

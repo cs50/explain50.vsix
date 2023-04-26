@@ -1,12 +1,12 @@
 {
-  "name": "copilot50",
-  "displayName": "Copilot50",
+  "name": "explain50",
+  "displayName": "Explain Highlighted Code",
   "description": "Provide code explanations for learners",
-  "icon": "images/copilot50.png",
+  "icon": "images/explain50.png",
   "version": "1.0.0",
   "publisher": "CS50",
   "preview": true,
-  "repository": "https://github.com/cs50/copilot50.vsix",
+  "repository": "https://github.com/cs50/explain50.vsix",
   "engines": {
     "vscode": "^1.76.0"
   },
@@ -23,22 +23,22 @@
   "contributes": {
     "commands": [
       {
-        "title": "Copilot50: Set API Key",
-        "command": "copilot50.setApiKey"
+        "title": "explain50: Set API Key",
+        "command": "explain50.setApiKey"
       },
       {
-        "title": "Copilot50: Remove API Key",
-        "command": "copilot50.unsetApiKey"
+        "title": "explain50: Remove API Key",
+        "command": "explain50.unsetApiKey"
       },
       {
         "title": "Explain Highlighted Code",
-        "command": "copilot50.codeAnalysis"
+        "command": "explain50.codeAnalysis"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "copilot50.codeAnalysis",
+          "command": "explain50.codeAnalysis",
           "when": "editorTextFocus",
           "group": "0_workspace@0"
         }
@@ -46,7 +46,7 @@
     },
     "keybindings": [
       {
-        "command": "copilot50.codeAnalysis",
+        "command": "explain50.codeAnalysis",
         "win": "alt+shift+e",
         "key": "alt+shift+e",
         "mac": "alt+shift+e",

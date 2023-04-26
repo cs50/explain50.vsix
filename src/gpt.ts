@@ -16,7 +16,7 @@ async function init(context: vscode.ExtensionContext) {
     _context = context;
 
     // Retrieve API key from global state, if it exists
-    const storedApiKey = context.globalState.get('copilot50.apiKey');
+    const storedApiKey = context.globalState.get('explain50.apiKey');
     storedApiKey !== undefined ? setApiKey(decode(String(storedApiKey))) : null;
 }
 
@@ -140,7 +140,7 @@ function setApiKey(value: string) {
             apiKey: value,
         });
         openai = new OpenAIApi(configuration);
-        _context.globalState.update('copilot50.apiKey', encode(value.trim()));
+        _context.globalState.update('explain50.apiKey', encode(value.trim()));
         didSetApiKey = true;
     } catch (e) {
         console.log(e);
@@ -151,7 +151,7 @@ function setApiKey(value: string) {
 // Remove API key from global state and unset it
 function unsetApiKey() {
     if (didSetApiKey) {
-        _context.globalState.update('copilot50.apiKey', undefined);
+        _context.globalState.update('explain50.apiKey', undefined);
         didSetApiKey = false;
         vscode.window.showInformationMessage("API key removed");
     } else {
