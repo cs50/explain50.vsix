@@ -17,7 +17,7 @@ function createWebviewPanel(context: vscode.ExtensionContext, documentName: stri
     }
 
     let panel = vscode.window.createWebviewPanel(
-        'codeAnalysis',
+        'explain',
         panelTitle,
         vscode.ViewColumn.Beside,
         {

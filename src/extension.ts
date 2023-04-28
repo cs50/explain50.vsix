@@ -8,8 +8,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function init(context: vscode.ExtensionContext) {
-
-    // Initialize GPT service
     gpt.init(context);
 
     // Register a code action provider for the typescript and typescriptreact languages.
@@ -25,8 +23,8 @@ function init(context: vscode.ExtensionContext) {
 
                 // Set the command that is executed when the code action is selected.
                 action.command = {
-                    title: 'Code Analysis',
-                    command: 'explain50.codeAnalysis'
+                    title: 'Explain Highlighted Code',
+                    command: 'explain50.explain'
                 };
 
                 // Set the diagnostics that this code action resolves.
@@ -40,26 +38,14 @@ function init(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // Register a command that is invoked when the code action is selected
-    disposable = vscode.commands.registerCommand('explain50.codeAnalysis', () => {
-        analyzeCode();
-    });
-    context.subscriptions.push(disposable);
-
-    // Register a command to set api key
-    disposable = vscode.commands.registerCommand('explain50.setApiKey', () => {
-        gpt.requestApiKey();
-    });
-    context.subscriptions.push(disposable);
-
-    // Register a command to remove api key
-    disposable = vscode.commands.registerCommand('explain50.unsetApiKey', () => {
-        gpt.unsetApiKey();
+    disposable = vscode.commands.registerCommand('explain50.explain', () => {
+        explainCode();
     });
     context.subscriptions.push(disposable);
 }
 
 // Analyze the selected code snippet or the current function definition
-function analyzeCode() {
+function explainCode() {
     getCodeSnippet()
         .then((result) => {
             const languageId = result[0];

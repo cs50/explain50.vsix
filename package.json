@@ -23,22 +23,14 @@
   "contributes": {
     "commands": [
       {
-        "title": "explain50: Set API Key",
-        "command": "explain50.setApiKey"
-      },
-      {
-        "title": "explain50: Remove API Key",
-        "command": "explain50.unsetApiKey"
-      },
-      {
         "title": "Explain Highlighted Code",
-        "command": "explain50.codeAnalysis"
+        "command": "explain50.explain"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "explain50.codeAnalysis",
+          "command": "explain50.explain",
           "when": "editorTextFocus",
           "group": "0_workspace@0"
         }
@@ -46,7 +38,7 @@
     },
     "keybindings": [
       {
-        "command": "explain50.codeAnalysis",
+        "command": "explain50.explain",
         "win": "alt+shift+e",
         "key": "alt+shift+e",
         "mac": "alt+shift+e",
