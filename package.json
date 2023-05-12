@@ -5,7 +5,7 @@
   "icon": "images/explain50.png",
   "version": "1.0.0",
   "publisher": "CS50",
-  "preview": true,
+  "preview": false,
   "repository": "https://github.com/cs50/explain50.vsix",
   "engines": {
     "vscode": "^1.76.0"
