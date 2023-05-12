@@ -3,12 +3,26 @@
 import * as vscode from 'vscode';
 import { codeBlock } from './utils';
 import { createWebviewPanel, webviewDeltaUpdate, disposeWebview } from './webview';
+const axios = require('axios').default;
 const https = require('https');
 
 let _context: vscode.ExtensionContext;
+let githubUserId: string;
 
-function init(context: vscode.ExtensionContext) {
+async function init(context: vscode.ExtensionContext) {
     _context = context;
+    githubUserId = await getUserId();
+}
+
+async function getUserId() {
+    const url = 'https://api.github.com/user'
+    const headers = {
+        'Authorization': `token ${process.env['GITHUB_TOKEN']}`,
+        'Accept': 'application/vnd.github.v3+json'
+    };
+    return await axios.get(url, {headers: headers}).then((response: any) => {
+        return response.data.id;
+    });
 }
 
 async function processPrompt(languageId: string, codeSnippet: string, documentName: string, lineStart: number, lineEnd: number) {
@@ -18,7 +32,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             "code": codeSnippet,
             "language_id": languageId,
             "stream": true,
-            "user": process.env["GITHUB_USER"] || "local_test_user",
+            "user": githubUserId || "local_test_user",
         });
 
         const postOptions = {
@@ -27,7 +41,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             port: 443,
             path: '/code/explain',
             headers: {
-                'Authorization': 'TODO', // Will be removed in the future
+                'Authorization': 'TODO',
                 'Content-Type': 'application/json'
             }
         };
@@ -41,7 +55,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
         });
 
         postRequest.write(postData);
-        postRequest.end();
+        postRequest.end();        
     } catch (error: any) {
         errorHandling(error);
     }

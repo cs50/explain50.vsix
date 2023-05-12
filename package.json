@@ -69,6 +69,7 @@
   },
   "dependencies": {
     "@vscode/vsce": "^2.18.0",
+    "axios": "^1.4.0",
     "markdown-it": "^13.0.1",
     "markdown-it-highlightjs": "^4.0.1",
     "openai": "^3.2.1"
