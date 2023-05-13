@@ -15,12 +15,12 @@ async function init(context: vscode.ExtensionContext) {
 }
 
 async function getUserId() {
-    const url = 'https://api.github.com/user'
+    const url = 'https://api.github.com/user';
     const headers = {
         'Authorization': `token ${process.env['GITHUB_TOKEN']}`,
         'Accept': 'application/vnd.github.v3+json'
     };
-    return await axios.get(url, {headers: headers}).then((response: any) => {
+    return await axios.get(url, { headers: headers }).then((response: any) => {
         return response.data.id;
     });
 }
@@ -55,7 +55,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
         });
 
         postRequest.write(postData);
-        postRequest.end();        
+        postRequest.end();
     } catch (error: any) {
         errorHandling(error);
     }
