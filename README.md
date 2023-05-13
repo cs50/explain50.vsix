@@ -1,17 +1,13 @@
 # explain50
-
-explain50 is a VS Code Extension that utilizes OpenAI's GPT-3.5 model to provide code explanations for learners. It is designed to help students understand the logic behind different code snippets and provide them with relevant information to enhance their programming knowledge.
+explain50 is a VS Code Extension that utilizes OpenAI's GPT model (gpt3.5-turbo) to provide code explanations for learners. It is designed to help students understand the logic behind different code snippets and provide them with relevant information to enhance their programming knowledge.
 
 ## Usage
-To use explain50, select a code snippet in your editor and right-click on it. Then, click the "Explain highlighted code" option from the context menu. explain50 will generate a natural language description of the code and provide relevant contextual information.
+To use explain50, select a code snippet in your editor and right-click on it. Next, click the "Explain highlighted code" option from the context menu. explain50 will then generate a natural language description of the code and provide relevant contextual information.
 
 ## Package and Install Extension
 
 ```
 npm install
 ./node_modules/vsce/vsce package
-code --install-extension cs50-0.0.1.vsix
+code --install-extension explain50-x.x.x
 ```
-
-## Requirements
-explain50 requires an OpenAI API key to function. You can obtain an API key from the OpenAI website: [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys).
