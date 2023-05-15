@@ -19,11 +19,11 @@ function init(context: vscode.ExtensionContext) {
             provideCodeActions(document, range) {
 
                 // Create a code action.
-                const action = new vscode.CodeAction('Explain highligted code', vscode.CodeActionKind.QuickFix);
+                const action = new vscode.CodeAction('Explain highligted code (beta)', vscode.CodeActionKind.QuickFix);
 
                 // Set the command that is executed when the code action is selected.
                 action.command = {
-                    title: 'Explain Highlighted Code',
+                    title: 'Explain Highlighted Code (beta)',
                     command: 'explain50.explain'
                 };
 

@@ -5,7 +5,7 @@
   "icon": "images/explain50.png",
   "version": "1.0.0",
   "publisher": "CS50",
-  "preview": false,
+  "preview": true,
   "repository": "https://github.com/cs50/explain50.vsix",
   "engines": {
     "vscode": "^1.76.0"
@@ -23,7 +23,7 @@
   "contributes": {
     "commands": [
       {
-        "title": "Explain Highlighted Code",
+        "title": "Explain Highlighted Code (beta)",
         "command": "explain50.explain"
       }
     ],
