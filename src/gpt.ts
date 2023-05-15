@@ -18,8 +18,9 @@ async function init(context: vscode.ExtensionContext) {
 async function getUserId() {
     const url = 'https://api.github.com/user';
     const headers = {
-        'Authorization': `token ${process.env['GITHUB_TOKEN']}`,
-        'Accept': 'application/vnd.github.v3+json'
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${process.env['GITHUB_TOKEN']}`,
+        'X-GitHub-Api-Version': '2022-11-28'
     };
     return await axios.get(url, { headers: headers }).then((response: any) => {
         return response.data.id;
