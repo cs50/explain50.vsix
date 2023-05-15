@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as vscode from 'vscode';
+import { Buffer } from 'buffer';
 import { codeBlock } from './utils';
 import { createWebviewPanel, webviewDeltaUpdate, disposeWebview } from './webview';
 const axios = require('axios').default;
@@ -41,7 +42,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             port: 443,
             path: '/code/explain',
             headers: {
-                'Authorization': 'TODO',
+                'Authorization': base64Encode(process.env['GITHUB_TOKEN']!),
                 'Content-Type': 'application/json'
             }
         };
@@ -59,6 +60,10 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
     } catch (error: any) {
         errorHandling(error);
     }
+}
+
+function base64Encode(str: string) {
+    return Buffer.from(str).toString('base64');
 }
 
 function errorHandling(error: any) {
