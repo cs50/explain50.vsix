@@ -1,7 +1,15 @@
 import * as vscode from 'vscode';
 import * as gpt from './gpt';
 
-const supportedLanguages = ['c', 'cpp', 'java', 'javascript', 'python', 'typescript', 'typescriptreact'];
+// A subset of languages that are supported by VS Code:
+// https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
+const supportedLanguages = [
+    'clojure', 'c', 'cpp', 'csharp', 'css', 'cuda-cpp', 'dockerfile', 'fsharp', 'go',
+    'groovy', 'handlebars', 'html', 'java', 'javascript', 'javascriptreact', 'latex',
+    'lua', 'makefile', 'objective-c', 'objective-cpp', 'perl', 'php', 'powershell',
+    'python', 'r', 'ruby', 'rust', 'scss', 'shellscript', 'sql', 'swift', 'typescript',
+    'typescriptreact', 'tex', 'vb', 'vue', 'vue-html', 'xml', 'yaml'
+];
 
 export function activate(context: vscode.ExtensionContext) {
     init(context);
