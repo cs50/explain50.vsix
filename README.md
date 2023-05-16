@@ -8,6 +8,6 @@ To use explain50, select a code snippet in your editor and right-click on it. Ne
 
 ```
 npm install
-./node_modules/vsce/vsce package
+./node_modules/.bin/vsce package
 code --install-extension explain50-x.x.x
 ```
