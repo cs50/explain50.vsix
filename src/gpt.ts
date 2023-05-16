@@ -5,6 +5,8 @@ import { Buffer } from 'buffer';
 import { codeBlock } from './utils';
 import { createWebviewPanel, webviewDeltaUpdate, disposeWebview } from './webview';
 const axios = require('axios').default;
+const crypto = require('crypto');
+const fs = require('fs');
 const https = require('https');
 
 let _context: vscode.ExtensionContext;
@@ -31,10 +33,10 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
     let panelId = createWebviewPanel(_context, documentName, lineStart, lineEnd);
     try {
         const postData = JSON.stringify({
-            "code": codeSnippet,
-            "language_id": languageId,
-            "stream": true,
-            "user": githubUserId || "local_test_user",
+            'code': codeSnippet,
+            'language_id': languageId,
+            'stream': true,
+            'user': githubUserId || 'local_test_user',
         });
 
         const postOptions = {
@@ -43,7 +45,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             port: 443,
             path: '/code/explain',
             headers: {
-                'Authorization': base64Encode(process.env['GITHUB_TOKEN']!),
+                'Authorization': encrypt(process.env['GITHUB_TOKEN']!),
                 'Content-Type': 'application/json'
             }
         };
@@ -63,8 +65,17 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
     }
 }
 
-function base64Encode(str: string) {
-    return Buffer.from(str).toString('base64');
+function encrypt(text: string) {
+    const pubKeyPath = vscode.Uri.joinPath(_context.extension.extensionUri, 'public_key.pem');
+    const pubKey = fs.readFileSync(pubKeyPath.path.toString(), 'utf8');
+
+    // encrypt with public key using OAEP padding
+    const encryptOptions = {
+        key: pubKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: 'sha256',
+    };
+    return crypto.publicEncrypt(encryptOptions, text).toString('base64');
 }
 
 function errorHandling(error: any) {
