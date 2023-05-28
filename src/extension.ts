@@ -32,7 +32,7 @@ function init(context: vscode.ExtensionContext) {
                 // Set the command that is executed when the code action is selected.
                 action.command = {
                     title: 'Explain Highlighted Code (beta)',
-                    command: 'explain50.explain'
+                    command: 'ai50.explain'
                 };
 
                 // Set the diagnostics that this code action resolves.
@@ -46,7 +46,7 @@ function init(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // Register a command that is invoked when the code action is selected
-    disposable = vscode.commands.registerCommand('explain50.explain', () => {
+    disposable = vscode.commands.registerCommand('ai50.explain', () => {
         explainCode();
     });
     context.subscriptions.push(disposable);

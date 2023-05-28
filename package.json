@@ -1,12 +1,12 @@
 {
-  "name": "explain50",
+  "name": "ai50",
   "displayName": "Explain Highlighted Code",
   "description": "Provide code explanations for learners",
-  "icon": "images/explain50.png",
+  "icon": "images/ai50.png",
   "version": "1.0.0",
   "publisher": "CS50",
   "preview": true,
-  "repository": "https://github.com/cs50/explain50.vsix",
+  "repository": "https://github.com/cs50/ai50.vsix",
   "engines": {
     "vscode": "^1.76.0"
   },
@@ -24,13 +24,13 @@
     "commands": [
       {
         "title": "Explain Highlighted Code (beta)",
-        "command": "explain50.explain"
+        "command": "ai50.explain"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "explain50.explain",
+          "command": "ai50.explain",
           "when": "editorTextFocus",
           "group": "0_workspace@0"
         }
@@ -38,7 +38,7 @@
     },
     "keybindings": [
       {
-        "command": "explain50.explain",
+        "command": "ai50.explain",
         "win": "alt+shift+e",
         "key": "alt+shift+e",
         "mac": "alt+shift+e",
