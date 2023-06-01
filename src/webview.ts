@@ -50,6 +50,9 @@ function createWebviewPanel(context: vscode.ExtensionContext, documentName: stri
     const highlightjsUri = panel.webview.asWebviewUri(
         vscode.Uri.joinPath(context.extension.extensionUri, `${STATICS_FOLDER}/vendor/highlightjs/11.7.0/highlight.min.js`));
 
+    // Get font size from vscode settings
+    let fontSize: number | undefined = vscode.workspace.getConfiguration().get('editor.fontSize');
+    fontSize !== undefined ? fontSize += 2 : 12;
     const htmlString =
     `<!DOCTYPE html>
     <html>
@@ -58,6 +61,9 @@ function createWebviewPanel(context: vscode.ExtensionContext, documentName: stri
             <link href="${highlightStyleUri}" rel="stylesheet">
             <link href="${styleUri}" rel="stylesheet">
             <style>
+                body {
+                    font-size: ${fontSize}px;
+                }
                 .loadingspinner {
                     pointer-events: none;
                     position: absolute;
