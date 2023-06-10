@@ -36,16 +36,18 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             'code': codeSnippet,
             'language_id': languageId,
             'stream': true,
-            'user': githubUserId || 'local_test_user',
+            'user': {
+                'id': githubUserId || 583231,
+                'login': process.env['GITHUB_USER'] || 'octocat'
+            }
         });
 
         const postOptions = {
             method: 'POST',
-            host: 'ai.cs50.io',
+            host: 'cs50.ai',
             port: 443,
             path: '/code/explain',
             headers: {
-                'Authorization': encrypt(process.env['GITHUB_TOKEN']!),
                 'Content-Type': 'application/json'
             }
         };
@@ -63,19 +65,6 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
     } catch (error: any) {
         errorHandling(error);
     }
-}
-
-function encrypt(text: string) {
-    const pubKeyPath = vscode.Uri.joinPath(_context.extension.extensionUri, 'public_key.pem');
-    const pubKey = fs.readFileSync(pubKeyPath.path.toString(), 'utf8');
-
-    // encrypt with public key using OAEP padding
-    const encryptOptions = {
-        key: pubKey,
-        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: 'sha256',
-    };
-    return crypto.publicEncrypt(encryptOptions, text).toString('base64');
 }
 
 function errorHandling(error: any) {
