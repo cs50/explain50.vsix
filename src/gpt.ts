@@ -37,8 +37,8 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             'language_id': languageId,
             'stream': true,
             'user': {
-                'id': githubUserId || 583231,
-                'login': process.env['GITHUB_USER'] || 'octocat'
+                'id': githubUserId,
+                'login': process.env['GITHUB_USER']
             }
         });
 
