@@ -10,23 +10,9 @@ const fs = require('fs');
 const https = require('https');
 
 let _context: vscode.ExtensionContext;
-let githubUserId: string;
 
 async function init(context: vscode.ExtensionContext) {
     _context = context;
-    githubUserId = await getUserId();
-}
-
-async function getUserId() {
-    const url = 'https://api.github.com/user';
-    const headers = {
-        'Accept': 'application/vnd.github+json',
-        'Authorization': `Bearer ${process.env['GITHUB_TOKEN']}`,
-        'X-GitHub-Api-Version': '2022-11-28'
-    };
-    return await axios.get(url, { headers: headers }).then((response: any) => {
-        return response.data.id;
-    });
 }
 
 async function processPrompt(languageId: string, codeSnippet: string, documentName: string, lineStart: number, lineEnd: number) {
@@ -35,19 +21,16 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
         const postData = JSON.stringify({
             'code': codeSnippet,
             'language_id': languageId,
-            'stream': true,
-            'user': {
-                'id': githubUserId,
-                'login': process.env['GITHUB_USER']
-            }
+            'stream': true
         });
 
         const postOptions = {
             method: 'POST',
             host: 'cs50.ai',
             port: 443,
-            path: '/code/explain',
+            path: '/api/v1/code/explain',
             headers: {
+                'Authorization': `Bearer ${process.env['CS50_TOKEN']}`,
                 'Content-Type': 'application/json'
             }
         };
