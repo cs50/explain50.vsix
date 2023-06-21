@@ -10,23 +10,9 @@ const fs = require('fs');
 const https = require('https');
 
 let _context: vscode.ExtensionContext;
-let githubUserId: string;
 
 async function init(context: vscode.ExtensionContext) {
     _context = context;
-    githubUserId = await getUserId();
-}
-
-async function getUserId() {
-    const url = 'https://api.github.com/user';
-    const headers = {
-        'Accept': 'application/vnd.github+json',
-        'Authorization': `Bearer ${process.env['GITHUB_TOKEN']}`,
-        'X-GitHub-Api-Version': '2022-11-28'
-    };
-    return await axios.get(url, { headers: headers }).then((response: any) => {
-        return response.data.id;
-    });
 }
 
 async function processPrompt(languageId: string, codeSnippet: string, documentName: string, lineStart: number, lineEnd: number) {
@@ -35,17 +21,16 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
         const postData = JSON.stringify({
             'code': codeSnippet,
             'language_id': languageId,
-            'stream': true,
-            'user': githubUserId || 'local_test_user',
+            'stream': true
         });
 
         const postOptions = {
             method: 'POST',
-            host: 'ai.cs50.io',
+            host: 'cs50.ai',
             port: 443,
-            path: '/code/explain',
+            path: '/api/v1/code/explain',
             headers: {
-                'Authorization': encrypt(process.env['GITHUB_TOKEN']!),
+                'Authorization': `Bearer ${process.env['CS50_TOKEN']}`,
                 'Content-Type': 'application/json'
             }
         };
@@ -63,19 +48,6 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
     } catch (error: any) {
         errorHandling(error);
     }
-}
-
-function encrypt(text: string) {
-    const pubKeyPath = vscode.Uri.joinPath(_context.extension.extensionUri, 'public_key.pem');
-    const pubKey = fs.readFileSync(pubKeyPath.path.toString(), 'utf8');
-
-    // encrypt with public key using OAEP padding
-    const encryptOptions = {
-        key: pubKey,
-        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: 'sha256',
-    };
-    return crypto.publicEncrypt(encryptOptions, text).toString('base64');
 }
 
 function errorHandling(error: any) {
