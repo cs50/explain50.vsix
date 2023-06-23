@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as vscode from 'vscode';
-import { Buffer } from 'buffer';
 import { codeBlock } from './utils';
 import { createWebviewPanel, webviewDeltaUpdate, disposeWebview } from './webview';
-const axios = require('axios').default;
-const crypto = require('crypto');
-const fs = require('fs');
 const https = require('https');
 
 let _context: vscode.ExtensionContext;
