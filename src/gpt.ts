@@ -28,7 +28,7 @@ async function processPrompt(languageId: string, codeSnippet: string, documentNa
             method: 'POST',
             host: 'cs50.ai',
             port: 443,
-            path: '/api/v1/code/explain',
+            path: '/api/v1/explain',
             headers: {
                 'Authorization': `Bearer ${process.env['CS50_TOKEN']}`,
                 'Content-Type': 'application/json'
