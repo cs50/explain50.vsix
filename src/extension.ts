@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from 'vscode';
-import * as gpt from './gpt';
 
 // A subset of languages that are supported by VS Code:
 // https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
@@ -16,7 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function init(context: vscode.ExtensionContext) {
-    gpt.init(context);
 
     // Register a code action provider for the typescript and typescriptreact languages.
     let disposable = vscode.languages.registerCodeActionsProvider(
@@ -27,12 +26,12 @@ function init(context: vscode.ExtensionContext) {
             provideCodeActions(document, range) {
 
                 // Create a code action.
-                const action = new vscode.CodeAction('Explain highligted code (beta)', vscode.CodeActionKind.QuickFix);
+                const action = new vscode.CodeAction('Explain Highlighted Code', vscode.CodeActionKind.QuickFix);
 
                 // Set the command that is executed when the code action is selected.
                 action.command = {
-                    title: 'Explain Highlighted Code (beta)',
-                    command: 'ai50.explain'
+                    title: 'Explain Highlighted Code',
+                    command: 'explain50.explain'
                 };
 
                 // Set the diagnostics that this code action resolves.
@@ -46,7 +45,7 @@ function init(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // Register a command that is invoked when the code action is selected
-    disposable = vscode.commands.registerCommand('ai50.explain', () => {
+    disposable = vscode.commands.registerCommand('explain50.explain', () => {
         explainCode();
     });
     context.subscriptions.push(disposable);
@@ -57,15 +56,33 @@ function explainCode() {
     getCodeSnippet()
         .then((result) => {
             const languageId = result[0];
-            const text = result[1];
+            const codeSnippet = result[1];
             const fileName = result[2];
-            const start = result[3];
-            const end = result[4];
-            if (text.length === 0) {
+            const lineStart = result[3];
+            const lineEnd = result[4];
+            if (codeSnippet.length === 0) {
                 vscode.window.showInformationMessage('No code selected or current file is not supported.');
                 return;
             }
-            gpt.processPrompt(languageId, text, fileName, start, end);
+            try {
+                const ddb50 = vscode.extensions.getExtension('cs50.ddb50');
+                const api = ddb50!.exports;
+                let displayMessage;
+                if (lineStart === lineEnd) {
+                    displayMessage = `Explain highlighted code for ${fileName}#L${lineStart}`;
+                } else {
+                    displayMessage = `Explain highlighted code for ${fileName}#L${lineStart}-L${lineEnd}`;
+                }
+                const payload = {
+                    "api": "/api/v1/explain",
+                    "code": codeSnippet,
+                    "language_id": languageId,
+                    "stream": true
+                };
+                api.requestGptResponse(displayMessage, payload);
+            } catch (error) {
+                console.log(error);
+            }
         });
 }
 
