@@ -75,7 +75,7 @@ function explainCode() {
                 }
                 const payload = {
                     "api": "/api/v1/explain",
-                    "course": "chat_cs50",
+                    "config": "chat_cs50",
                     "code": codeSnippet,
                     "language_id": languageId,
                     "stream": true
