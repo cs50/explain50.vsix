@@ -69,17 +69,21 @@ function explainCode() {
                 const api = ddb50!.exports;
                 let displayMessage;
                 if (lineStart === lineEnd) {
-                    displayMessage = `Explain highlighted code for ${fileName}#L${lineStart}`;
+                    displayMessage = `Explain highlighted ${languageId} code for ${fileName}#L${lineStart}`;
                 } else {
-                    displayMessage = `Explain highlighted code for ${fileName}#L${lineStart}-L${lineEnd}`;
+                    displayMessage = `Explain highlighted ${languageId} code for ${fileName}#L${lineStart}-L${lineEnd}`;
                 }
                 const payload = {
                     "api": "/api/v1/explain",
+                    "course": "chat_cs50",
                     "code": codeSnippet,
                     "language_id": languageId,
                     "stream": true
                 };
-                api.requestGptResponse(displayMessage, payload);
+
+                // This is the actual message that would end up in messages array for GPT (e.g., for GPT to see the code)
+                const contextMessage = `${displayMessage}:\n${codeSnippet}`;
+                api.requestGptResponse(displayMessage, contextMessage, payload);
             } catch (error) {
                 console.log(error);
             }
