@@ -82,7 +82,7 @@ function explainCode() {
                 };
 
                 // This is the actual message that would end up in messages array for GPT (e.g., for GPT to see the code)
-                const contextMessage = `${displayMessage}:\n${codeSnippet}`;
+                const contextMessage = `${displayMessage}:\n\`\`\`${languageId}\n${codeSnippet}`;
                 api.requestGptResponse(displayMessage, contextMessage, payload);
             } catch (error) {
                 console.log(error);
