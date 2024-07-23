@@ -46,9 +46,6 @@
       }
     ]
   },
-  "files": [
-    "public_key.pem"
-  ],
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
