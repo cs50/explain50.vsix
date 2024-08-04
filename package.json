@@ -54,7 +54,6 @@
     "lint": "eslint src --ext ts"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "20.x",
     "@types/vscode": "^1.85.0",
