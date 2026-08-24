@@ -8,7 +8,7 @@
   "preview": true,
   "repository": "https://github.com/cs50/explain50.vsix",
   "engines": {
-    "vscode": "^1.134.0"
+    "vscode": "^1.132.0"
   },
   "categories": [
     "Education",
@@ -56,7 +56,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "26.2.0",
-    "@types/vscode": "^1.134.0",
+    "@types/vscode": "^1.132.0",
     "@typescript-eslint/eslint-plugin": "^8.67.0",
     "@typescript-eslint/parser": "^8.67.0",
     "@vscode/test-electron": "^3.1.0",
